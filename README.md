@@ -2,6 +2,7 @@
 Monitor and persist Bitcoin on-chain data to Postgres.
 
 ## Quickstart guide
+- install Docker: [Mac](https://www.docker.com/docker-mac) | [Ubuntu](https://www.docker.com/docker-ubuntu)
 - clone the repo
 - build the Docker image:
   - `make build`
