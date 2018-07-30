@@ -7,33 +7,33 @@ help:
 	@echo "build		build Docker images"
 	@echo "up		start Docker containers"
 	@echo "down		stop Docker containers"
+	@echo "logs		Re-attach to logging output"
 	@echo "bash		Bash shell inside bitcoind container"
-	@echo "attach		Attach to bitcoind stdout"
 	@echo "clean		delete stopped containers and dangling images"
 	@echo ""
 
 .PHONY: build
 build:
-	docker build . -t bitcoin-monitor
+	docker-compose build
 	@echo "All built 🏛"
+
+.PHONY: up
+up:
+	docker-compose up -d
+	@make logs
+
+.PHONY: down
+down:
+	docker-compose stop
+
+.PHONY: logs
+logs:
+	docker-compose logs -f
 
 .PHONY: bash
 bash:
 	@echo "Dropping into bash inside bitcoind container."
-	@docker ps | grep bitcoind | cut -d' ' -f1 | xargs -o -I % docker exec -it % bash
-
-.PHONY: attach
-attach:
-	@echo "Attaching to bitcoind stdout, ctrl-c to detach."
-	@docker ps | grep bitcoind | cut -d' ' -f1 | xargs -o docker attach
-
-.PHONY: up
-up:
-	docker run -t -d bitcoin-monitor
-
-.PHONY: down
-down:
-	docker ps | grep bitcoin-monitor | cut -d' ' -f1 | xargs docker stop
+	@docker-compose exec bitcoind bash
 
 .PHONY: clean
 clean:
