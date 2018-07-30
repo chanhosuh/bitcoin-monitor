@@ -7,6 +7,8 @@ help:
 	@echo "build		build Docker images"
 	@echo "up		start Docker containers"
 	@echo "down		stop Docker containers"
+	@echo "bash		Bash shell inside bitcoind container"
+	@echo "attach		Attach to bitcoind stdout"
 	@echo "clean		delete stopped containers and dangling images"
 	@echo ""
 
@@ -17,11 +19,17 @@ build:
 
 .PHONY: bash
 bash:
-	docker run -it bitcoin-monitor /bin/bash
+	@echo "Dropping into bash inside bitcoind container."
+	@docker ps | grep bitcoind | cut -d' ' -f1 | xargs -o -I % docker exec -it % bash
+
+.PHONY: attach
+attach:
+	@echo "Attaching to bitcoind stdout, ctrl-c to detach."
+	@docker ps | grep bitcoind | cut -d' ' -f1 | xargs -o docker attach
 
 .PHONY: up
 up:
-	docker run -d bitcoin-monitor
+	docker run -t -d bitcoin-monitor
 
 .PHONY: down
 down:
