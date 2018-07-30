@@ -4,12 +4,14 @@
 .PHONY: help
 help:
 	@echo ""
-	@echo "build		build Docker images"
-	@echo "up		start Docker containers"
-	@echo "down		stop Docker containers"
+	@echo "build		Build Docker images"
+	@echo "up		Start Docker containers"
+	@echo "down		Stop Docker containers"
+	@echo "restart		Stop then start Docker containers"
+	@echo "rebuild		Stop, build, then start Docker containers"
 	@echo "logs		Re-attach to logging output"
 	@echo "bash		Bash shell inside bitcoind container"
-	@echo "clean		delete stopped containers and dangling images"
+	@echo "clean		Delete stopped containers and dangling images"
 	@echo ""
 
 .PHONY: build
@@ -25,6 +27,19 @@ up:
 .PHONY: down
 down:
 	docker-compose stop
+
+.PHONY: restart
+restart:
+	@echo "make down ==> make up"
+	@make down
+	@make up
+
+.PHONY: rebuild
+rebuild:
+	@echo "make down ==> make build ==> make up"
+	@make down
+	@make build
+	@make up
 
 .PHONY: logs
 logs:
