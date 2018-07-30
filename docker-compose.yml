@@ -2,7 +2,7 @@ version: '3'
 
 services:
   bitcoind:
-    image: 'bitcoind'
+    build: .
     stdin_open: true
     tty: true
 
