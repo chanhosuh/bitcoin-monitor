@@ -12,3 +12,6 @@ Monitor and persist Bitcoin on-chain data to Postgres.
   - `make logs` will re-attach you to logging
 - stop the container:
   - `make down`
+
+## References
+[Mastering Bitcoin, chapter 3](https://github.com/bitcoinbook/bitcoinbook/blob/develop/ch03.asciidoc), intro to `bitcoind`
