@@ -17,14 +17,14 @@ services:
         command: >
             bash -c
                 "./manage.py migrate
-            ./manage.py runserver 0.0.0.0:8009"
+            ./manage.py runserver 0.0.0.0:8080"
         env_file:
             - ./dev.env
             - ./local.env
         restart: always
         ports:
-            - "8009:8009"
-            - "8891:8888"
+            - "8080:8080"
+            - "8891:8891"
         stdin_open: true
         tty: true
         volumes:
