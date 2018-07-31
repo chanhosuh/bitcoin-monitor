@@ -2,7 +2,9 @@ version: '3'
 
 services:
     bitcoind:
-        build: .
+        build: ./bitcoind
+        volumes:
+            - "bitcoin-data:/data"
         stdin_open: true
         tty: true
         ports:
@@ -37,3 +39,5 @@ services:
 
 volumes:
     db-data:
+    bitcoin-data:
+

@@ -1,12 +1,18 @@
 FROM ubuntu:18.04
 
-RUN apt-get update
-RUN apt-get install software-properties-common -y
+RUN apt-get update && \
+    apt-get install -y software-properties-common
 RUN add-apt-repository ppa:bitcoin/bitcoin -y
-RUN apt-get update
-RUN apt-get install -y bitcoind
+RUN apt-get update && \
+    apt-get install -y bitcoind && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN mkdir /root/.bitcoin
+# create data directory
+ENV BITCOIN_DATA /data
+RUN mkdir "$BITCOIN_DATA" && \
+    ln -s "$BITCOIN_DATA" /root/.bitcoin
+
+# RUN mkdir /root/.bitcoin
 RUN echo "\
 # keep full transaction index, useful for getrawtransaction\
 # txindex=1\n\
@@ -22,5 +28,6 @@ maxmempool=150\n\
 maxreceivebuffer=2500\n\
 maxsendbuffer=500\n\
 " > /root/.bitcoin/bitcoin.conf
+
 
 CMD ["bitcoind", "-printtoconsole"]
