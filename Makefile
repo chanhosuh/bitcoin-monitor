@@ -58,3 +58,10 @@ clean:
 	docker images -q -f dangling=true | xargs docker rmi
 	@echo "All clean 🛀"
 
+.PHONY: status
+status:
+	@docker-compose exec bitcoind bash -c "\
+	    bitcoin-cli getblockchaininfo\
+	"
+
+

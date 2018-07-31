@@ -1,3 +1,8 @@
+# python
+__pycache__/
+
+# django
+db.sqlite3
 
 # Eclipse
 .project
@@ -5,6 +10,8 @@
 
 # Mac
 **/.DS_Store
+
+# coverage
 htmlcov/
 
 # Misc

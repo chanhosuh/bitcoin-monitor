@@ -1,8 +1,39 @@
 version: '3'
 
 services:
-  bitcoind:
-    build: .
-    stdin_open: true
-    tty: true
+    bitcoind:
+        build: .
+        stdin_open: true
+        tty: true
+        ports:
+            - "8000:8000"
 
+    django:
+        build: ./django
+        command: >
+            bash -c
+                "./manage.py migrate
+            ./manage.py runserver 0.0.0.0:8009"
+        env_file:
+            - ./dev.env
+            - ./local.env
+        restart: always
+        ports:
+            - "8009:8009"
+            - "8891:8888"
+        stdin_open: true
+        tty: true
+        volumes:
+            - ./django:/code/
+        depends_on:
+            - db
+
+    db:
+        image: postgres
+        volumes:
+            - "db-data:/var/lib/postgresql/data"
+        ports:
+            - "8001:5432"
+
+volumes:
+    db-data:
