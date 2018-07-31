@@ -11,6 +11,15 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+import datetime
+from distutils.util import strtobool
+import logging
+import sys
+
+TEST_RUNNER = "redgreenunittest.django.runner.RedGreenDiscoverRunner"
+
+# Determine if Django is being run for test
+IS_TEST = len(sys.argv) > 1 and sys.argv[1] == 'test'
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -23,10 +32,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '8l7%r$bf%l&)*g&_+1vf57*u2bc@4z7y1+#2t)a@6@c5%l8kia'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = strtobool(os.environ.get('DEBUG', "False"))
+if IS_TEST:
+    DEBUG = False
+    logging.disable(logging.CRITICAL)
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', ]
 
 # Application definition
 
@@ -37,9 +48,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Third-party apps
+    'django_celery_beat',
+    'django_extensions',
+    'debug_toolbar',
+
+    # Our apps
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -54,7 +73,7 @@ ROOT_URLCONF = 'bitcoin_monitor.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -73,13 +92,22 @@ WSGI_APPLICATION = 'bitcoin_monitor.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'bitcoinmonitor',
+        'USER': 'bitcoinmonitor',
+        'PASSWORD': 'bitcoinmonitor',
+        'HOST': os.environ.get('DB_HOSTNAME', 'db'),
+        'PORT': '5432',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -104,13 +132,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 
@@ -118,3 +142,71 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# Logging setup
+LS_LOGGING_FORMAT = '[%(levelname)s][%(name)s] %(asctime)s: %(message)s'
+CELERY_WORKER_LOG_FORMAT = '[%(levelname)s][%(process)s][%(name)s] %(asctime)s: %(message)s'
+
+LOG_DIR = os.path.join(BASE_DIR, 'logs')
+os.makedirs(LOG_DIR, exist_ok=True)
+
+__dt_string = datetime.datetime.now().strftime('%Y%m%d-%H%M%S')
+LOG_FILEPATH = os.path.join(LOG_DIR, __dt_string + '.log')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    'formatters': {
+        'ls_standard': {
+            'format': LS_LOGGING_FORMAT,
+        },
+        'django.server': {
+            '()': 'django.utils.log.ServerFormatter',
+            'format': LS_LOGGING_FORMAT,
+        }
+    },
+
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': LOG_FILEPATH,
+            'formatter': 'ls_standard',
+        },
+        'django.server': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'django.server',
+        },
+    },
+
+    'loggers': {
+        'django.server': {
+            'handlers': ['django.server', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+
+}
+
+
+# Celery
+CELERY_BROKER_HOST = {
+    'hostname': os.environ.get('CELERY_BROKER_HOSTNAME'),
+    'port': 6379
+}
+CELERY_BROKER_URL = 'redis://{}:{}/0'.format(
+    CELERY_BROKER_HOST['hostname'], CELERY_BROKER_HOST['port'])
+CELERY_ACCEPT_CONTENT = ['pickle']
+CELERY_TASK_SERIALIZER = 'pickle'
+CELERY_RESULT_SERIALIZER = 'pickle'
+
+# Redis
+REDIS_HOST = 'redis'
+REDIS_PORT = 6379
+
+# Debug toolbar
+DEBUG_TOOLBAR_CONFIG = {'SHOW_TOOLBAR_CALLBACK': lambda _request: DEBUG}
