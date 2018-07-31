@@ -45,6 +45,24 @@ rebuild:
 logs:
 	docker-compose logs -f
 
+.PHONY: log
+log:
+	@if test -z $(name); then\
+	    echo "";\
+	    echo "Please enter a container name as argument.";\
+	    echo "";\
+	    echo " e.g. 'make log name=bitcoind'";\
+	    echo "";\
+	    echo "or use 'make logs' to attach to all container logs.";\
+	    echo "";\
+	    echo "Available container names are:";\
+	    echo "  bitcoind";\
+	    echo "  django";\
+	    echo "  db";\
+	else\
+	  docker-compose logs -f $(name);\
+	fi
+
 .PHONY: bash
 bash:
 	@echo "Dropping into bash inside bitcoind container."

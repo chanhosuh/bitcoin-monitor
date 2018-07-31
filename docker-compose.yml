@@ -5,6 +5,8 @@ services:
         build: ./bitcoind
         volumes:
             - "bitcoin-data:/data"
+        networks:
+            - bitcoin
         stdin_open: true
         tty: true
         ports:
@@ -27,17 +29,24 @@ services:
         tty: true
         volumes:
             - ./django:/code/
+        networks:
+            - bitcoin
         depends_on:
             - db
 
     db:
-        image: postgres
+        build: ./postgres
         volumes:
             - "db-data:/var/lib/postgresql/data"
         ports:
             - "8001:5432"
+        networks:
+            - bitcoin
+
 
 volumes:
     db-data:
     bitcoin-data:
 
+networks:
+    bitcoin:
