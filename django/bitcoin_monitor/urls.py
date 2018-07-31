@@ -15,6 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from bitcoin_monitor import settings
+from django.urls import include
+from django.conf.urls import url
 
 urlpatterns = [
     path('admin/', admin.site.urls),
