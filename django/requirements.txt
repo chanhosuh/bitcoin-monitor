@@ -37,6 +37,7 @@ Pygments==2.2.0
 pylint==2.0.1
 pylint-django==2.0
 pylint-plugin-utils==0.4
+python-bitcoinlib==0.10.1
 python-dateutil==2.7.3
 pytz==2018.5
 redgreenunittest==0.1.1
