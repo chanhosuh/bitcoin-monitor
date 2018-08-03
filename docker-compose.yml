@@ -10,7 +10,7 @@ services:
         stdin_open: true
         tty: true
         ports:
-            - "8000:8000"
+            - "8000:8332"
 
     django:
         build: ./django
@@ -24,7 +24,7 @@ services:
         restart: always
         ports:
             - "8080:8080"
-            - "8891:8891"
+            - "8001:8891"
         stdin_open: true
         tty: true
         volumes:
@@ -39,7 +39,7 @@ services:
         volumes:
             - "db-data:/var/lib/postgresql/data"
         ports:
-            - "8001:5432"
+            - "8002:5432"
         networks:
             - bitcoin
 
