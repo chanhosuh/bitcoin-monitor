@@ -68,6 +68,10 @@ bash:
 	@echo "Dropping into bash inside bitcoind container."
 	@docker-compose exec bitcoind bash
 
+.PHONY: ipython
+ipython:
+	docker-compose exec django /code/manage.py shell_plus --ipython
+
 .PHONY: clean
 clean:
 	@echo "Deleting exited containers..."
