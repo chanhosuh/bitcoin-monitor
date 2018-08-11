@@ -4,13 +4,20 @@
 .PHONY: help
 help:
 	@echo ""
-	@echo "build		Build Docker images"
+	@echo "OPERATE:"
 	@echo "up		Start Docker containers"
 	@echo "down		Stop Docker containers"
 	@echo "restart		Stop then start Docker containers"
+	@echo "build		Build Docker images"
 	@echo "rebuild		Stop, build, then start Docker containers"
+	@echo ""
+	@echo "DEBUGGING:"
 	@echo "logs		Re-attach to logging output"
 	@echo "bash		Bash shell inside bitcoind container"
+	@echo "ipython		Interactive console inside django container"
+	@echo "status	        Blockchain status info from bitcoind"
+	@echo ""
+	@echo "MAINTENANCE:"
 	@echo "clean		Delete stopped containers and dangling images"
 	@echo ""
 
@@ -83,7 +90,10 @@ clean:
 .PHONY: status
 status:
 	@docker-compose exec bitcoind bash -c "\
-	    bitcoin-cli getblockchaininfo\
+	    bitcoin-cli \
+	    -rpcuser=user \
+	    -rpcpassword=password \
+	    getblockchaininfo\
 	"
 
 
