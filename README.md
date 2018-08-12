@@ -13,6 +13,14 @@ Monitor and persist Bitcoin on-chain data to Postgres.
   - `make logs` will re-attach you to logging
 - stop the container:
   - `make down`
+- check RPC client works:
+  - start the containers if they aren't running (`make up`)
+  - `make bash` (will drop you in a bash shell inside the `django` container)
+  - `python -m jsonrpc.client` (runs the "main" code in the `jsonrpc.client` module)
+  - you should see JSON output of a block's contents
+    - if not, you can debug with [pdb][pdb guide] by putting a `import ipdb; ipdb.set_trace()` line inside the main code in the client module and running the script again.
+
+[pdb guide]: https://pymotw.com/3/pdb/
 
 ## References
 [Mastering Bitcoin, chapter 3](https://github.com/bitcoinbook/bitcoinbook/blob/develop/ch03.asciidoc), intro to `bitcoind`
