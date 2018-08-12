@@ -9,6 +9,7 @@ class RpcClientError(RpcError):
     pass
 
 
+# pylint: disable=redefined-outer-name
 class RpcClient:
     """ class to interact with bitcoind through
     its JSON-RPC API; essentially a substitute
@@ -34,12 +35,17 @@ class RpcClient:
             'params': rpc_params,
         }
         payload = json.dumps(params)
-        response = requests.post(
+        response = self._session.post(
             self._rpc_url,
             headers=self._session.headers,
             data=payload,
         )
         return response
+
+    def get_best_block_hash(self):
+        response = self._call_method('getbestblockhash', rpc_params=[])
+        response_json = response.json()
+        return response_json['result']
 
     def get_block(self, block_hash, verbosity=1):
         if verbosity not in [1, 2]:
@@ -60,4 +66,11 @@ class RpcClient:
 
     def get_block_transaction_value(self, block_hash):
         raise NotImplementedError('todo')
+
+
+if __name__ == '__main__':
+    client = RpcClient()
+    block_hash = client.get_best_block_hash()
+    block = client.get_block(block_hash)
+    print(block)
 

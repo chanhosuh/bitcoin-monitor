@@ -13,7 +13,7 @@ help:
 	@echo ""
 	@echo "DEBUGGING:"
 	@echo "logs		Re-attach to logging output"
-	@echo "bash		Bash shell inside bitcoind container"
+	@echo "bash		Bash inside a container (default=django)"
 	@echo "ipython		Interactive console inside django container"
 	@echo "status	        Blockchain status info from bitcoind"
 	@echo ""
@@ -72,8 +72,13 @@ log:
 
 .PHONY: bash
 bash:
-	@echo "Dropping into bash inside bitcoind container."
-	@docker-compose exec bitcoind bash
+	@if test -z $(name); then\
+	    echo "bash in django container:";\
+	    docker-compose exec django bash;\
+	else\
+	    echo "bash in $(name) container:";\
+	    docker-compose exec $(name) bash;\
+	fi
 
 .PHONY: ipython
 ipython:

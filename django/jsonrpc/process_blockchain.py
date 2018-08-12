@@ -13,7 +13,7 @@ rpc_method = 'getblock'
 # --- get best block hash -----
 # $ make bash
 # Dropping into bash inside bitcoind container.
-# root@efa0de6df53b:/# bitcoin-cli -rpcuser=user -rpcpassword=password getbestblockhas
+# root@efa0de6df53b:/# bitcoin-cli -rpcuser=user -rpcpassword=password getbestblockhash
 # 0000000000000000088321525a33f3838d973077375875ba733985ff4a92abcb
 # -----------------------------
 block_hash = '0000000000000000088321525a33f3838d973077375875ba733985ff4a92abcb'
