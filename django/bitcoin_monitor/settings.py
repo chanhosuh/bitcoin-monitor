@@ -210,3 +210,9 @@ REDIS_PORT = 6379
 
 # Debug toolbar
 DEBUG_TOOLBAR_CONFIG = {'SHOW_TOOLBAR_CALLBACK': lambda _request: DEBUG}
+
+# bitcoind RPC
+RPC_VERSION = '2.0'
+RPC_HEADERS = {'content-type': 'application/json'}
+RPC_ID = 'bitcoin-monitor'
+RPC_URL = 'http://bitcoind:8332'
