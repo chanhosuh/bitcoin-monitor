@@ -106,4 +106,3 @@ if __name__ == '__main__':
     block_hash = client.get_best_block_hash()
     block = client.get_block(block_hash)
     print(block)
-

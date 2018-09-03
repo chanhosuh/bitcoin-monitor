@@ -70,4 +70,3 @@ class BitcoinField(ModifiedDecimalBaseField):
         """
         value = self.get_prep_value(value)
         return connection.ops.adapt_decimalfield_value(value, self.max_digits, self.decimal_places)
-
