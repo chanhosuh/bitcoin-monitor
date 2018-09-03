@@ -1,24 +1,36 @@
 
 .DEFAULT_GOAL := help
 
+TODAY := $(shell date -u +%Y%m%d)
+
 .PHONY: help
 help:
 	@echo ""
 	@echo "OPERATE:"
-	@echo "up		Start Docker containers"
-	@echo "down		Stop Docker containers"
-	@echo "restart		Stop then start Docker containers"
-	@echo "build		Build Docker images"
-	@echo "rebuild		Stop, build, then start Docker containers"
+	@echo "up                Start containers"
+	@echo "down              Stop containers"
+	@echo "restart           Stop then start containers"
+	@echo "build             Build images"
+	@echo "rebuild           Stop, build, then start containers"
 	@echo ""
 	@echo "DEBUGGING:"
-	@echo "logs		Re-attach to logging output"
-	@echo "bash		Bash inside a container (default=django)"
-	@echo "ipython		Interactive console inside django container"
-	@echo "status	        Blockchain status info from bitcoind"
+	@echo "logs              Re-attach to all logging output"
+	@echo "log               Re-attach to specified container log"
+	@echo "bash              Bash inside a container (default=django)"
+	@echo "ipython           Interactive console inside django container"
+	@echo "status            Blockchain status info from bitcoind"
+	@echo ""
+	@echo "TEST:"
+	@echo "test              Execute tests on running containers"
+	@echo "coverage          Run test coverage analysis and generate html report"
+	@echo "lint              Linting checks through flake8"
+	@echo ""
+	@echo "DATA:"
+	@echo "nuke_db           Delete Postgres and Redis data"
+	@echo "clear_redis       Delete all the keys in Redis"
 	@echo ""
 	@echo "MAINTENANCE:"
-	@echo "clean		Delete stopped containers and dangling images"
+	@echo "clean		     Delete stopped containers and dangling images"
 	@echo ""
 
 .PHONY: build
@@ -50,7 +62,9 @@ rebuild:
 
 .PHONY: logs
 logs:
-	docker-compose logs -f
+	# docker-compose logs -f | tee "django/logs/$(TODAY).log"
+	docker-compose logs -f --no-color > "django/logs/$(TODAY).log" &
+	docker-compose logs -f 
 
 .PHONY: log
 log:
@@ -101,4 +115,42 @@ status:
 	    getblockchaininfo\
 	"
 
+.PHONY: nuke_db
+nuke_db:
+	@read -r -p "WARNING: this will delete all data from Postgres and Redis (ctrl-c to exit / any other key to continue)." input
+	@make down
+	@docker-compose rm --force --stop -v redis
+	@docker-compose rm --force --stop -v db
+	@docker volume rm loanstreet-rebuild_db-data
+	@echo "Postgres and Redis data deleted 💣"
 
+.PHONY: clear_redis
+clear_redis:
+	@read -r -p "WARNING: this will clear all Redis data (ctrl-C to exit / any other key to continue)." input
+	@docker-compose rm --force --stop -v redis
+	@docker-compose up -d redis
+
+.PHONY: test
+test:
+	@make up
+	@echo "Starting django tests..."
+	docker-compose exec django  sh -c "manage.py test --noinput"
+	@echo "Tests passed 🏁"
+
+.PHONY: lint
+lint:
+	@echo "flake8 django"
+	@if ! flake8 django; then \
+	    echo "flake8: \033[00;31mFAILED\033[0m checks" ;\
+	    exit 1 ;\
+	fi
+	@echo "flake8 passed 🥇"
+
+.PHONY: coverage
+coverage:
+	-docker-compose exec django coverage run manage.py test
+	docker-compose exec django coverage report
+	docker-compose exec django coverage html
+	@echo "test coverage report complete 📊"
+	@docker cp "$(shell docker ps | grep 'loanstreet-rebuild_django' | cut -d ' ' -f1)":/code/htmlcov /tmp
+	@python -m webbrowser "file:///tmp/htmlcov/index.html"

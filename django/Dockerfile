@@ -1,4 +1,4 @@
-FROM python:3.6.4-slim
+FROM python:3.7.0-slim
 
 ENV PYTHONUNBUFFERED=1
 WORKDIR /tmp
