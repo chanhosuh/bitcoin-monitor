@@ -21,6 +21,8 @@ services:
         env_file:
             - ./dev.env
             - ./local.env
+        environment:
+            - CONTAINER_NAME=django
         restart: always
         ports:
             - "8080:8080"
@@ -34,6 +36,24 @@ services:
         depends_on:
             - db
 
+    celery:
+        build: ./django
+        user: www-data
+        command: python manage.py celery
+        env_file:
+            - ./dev.env
+            - ./local.env
+        environment:
+            - CONTAINER_NAME=celery
+        restart: always
+        volumes:
+            - ./django:/code/
+        networks:
+            - bitcoin
+        depends_on:
+            - db
+            - redis
+
     db:
         build: ./postgres
         volumes:
@@ -43,6 +63,12 @@ services:
         networks:
             - bitcoin
 
+    redis:
+        image: redis
+        ports:
+            - "6381:6379"
+        networks:
+            - bitcoin
 
 volumes:
     db-data:

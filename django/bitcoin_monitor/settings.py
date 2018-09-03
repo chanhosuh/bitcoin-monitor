@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
 
     # Our apps
+    'bitcoin_monitor.apps.BitcoinMonitorConfig',
 ]
 
 MIDDLEWARE = [
