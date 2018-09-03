@@ -62,8 +62,6 @@ rebuild:
 
 .PHONY: logs
 logs:
-	# docker-compose logs -f | tee "django/logs/$(TODAY).log"
-	docker-compose logs -f --no-color > "django/logs/$(TODAY).log" &
 	docker-compose logs -f 
 
 .PHONY: log
@@ -132,7 +130,7 @@ clear_redis:
 
 .PHONY: test
 test:
-	@make up
+	docker-compose up -d
 	@echo "Starting django tests..."
 	docker-compose exec django  sh -c "manage.py test --noinput"
 	@echo "Tests passed 🏁"
