@@ -16,26 +16,22 @@ from distutils.util import strtobool
 import logging
 import sys
 
-TEST_RUNNER = "redgreenunittest.django.runner.RedGreenDiscoverRunner"
-
-# Determine if Django is being run for test
-IS_TEST = len(sys.argv) > 1 and sys.argv[1] == 'test'
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '8l7%r$bf%l&)*g&_+1vf57*u2bc@4z7y1+#2t)a@6@c5%l8kia'
+SECRET_KEY = '*p9-m^%=h20t$0$xf#s^z4p0x1lu+(de!j@^1#ba$^4t*y$^a6'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = strtobool(os.environ.get('DEBUG', "False"))
+
+# debug mode should be off during tests
+IS_TEST = len(sys.argv) > 1 and sys.argv[1] == 'test'
 if IS_TEST:
     DEBUG = False
-    logging.disable(logging.CRITICAL)
+
+TEST_RUNNER = "redgreenunittest.django.runner.RedGreenDiscoverRunner"
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', ]
 
@@ -145,35 +141,34 @@ STATIC_URL = '/static/'
 
 
 # Logging setup
-LS_LOGGING_FORMAT = '[%(levelname)s][%(name)s] %(asctime)s: %(message)s'
-CELERY_WORKER_LOG_FORMAT = '[%(levelname)s][%(process)s][%(name)s] %(asctime)s: %(message)s'
+DEFAULT_LOGGING_FORMAT = '[%(levelname)s][%(name)s] %(asctime)s: %(message)s'
+CELERY_LOGGING_FORMAT = '[%(levelname)s][%(process)s][%(name)s] %(asctime)s: %(message)s'
 
-LOG_DIR = os.path.join(BASE_DIR, 'logs')
-os.makedirs(LOG_DIR, exist_ok=True)
-
-__dt_string = datetime.datetime.now().strftime('%Y%m%d-%H%M%S')
-LOG_FILEPATH = os.path.join(LOG_DIR, __dt_string + '.log')
+CONTAINER_NAME = os.environ.get('CONTAINER_NAME', '')
+if CONTAINER_NAME == 'worker':
+    LOGGING_FORMAT = CELERY_LOGGING_FORMAT
+else:
+    LOGGING_FORMAT = DEFAULT_LOGGING_FORMAT
 
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
 
     'formatters': {
-        'ls_standard': {
-            'format': LS_LOGGING_FORMAT,
+        'standard': {
+            'format': LOGGING_FORMAT,
         },
         'django.server': {
             '()': 'django.utils.log.ServerFormatter',
-            'format': LS_LOGGING_FORMAT,
-        }
+            'format': DEFAULT_LOGGING_FORMAT,
+        },
     },
 
     'handlers': {
-        'file': {
+        'console': {
             'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': LOG_FILEPATH,
-            'formatter': 'ls_standard',
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard',
         },
         'django.server': {
             'level': 'INFO',
@@ -183,35 +178,44 @@ LOGGING = {
     },
 
     'loggers': {
+        '': {
+            'handlers': ['console', ],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
         'django.server': {
-            'handlers': ['django.server', 'file'],
+            'handlers': ['django.server', ],
             'level': 'INFO',
             'propagate': False,
         },
     },
-
 }
 
-
-# Celery
+# --- Celery --- #
 CELERY_BROKER_HOST = {
     'hostname': os.environ.get('CELERY_BROKER_HOSTNAME'),
-    'port': 6379
+    'port': 6379,
 }
 CELERY_BROKER_URL = 'redis://{}:{}/0'.format(
-    CELERY_BROKER_HOST['hostname'], CELERY_BROKER_HOST['port'])
+    CELERY_BROKER_HOST['hostname'],
+    CELERY_BROKER_HOST['port'],
+)
 CELERY_ACCEPT_CONTENT = ['pickle']
 CELERY_TASK_SERIALIZER = 'pickle'
 CELERY_RESULT_SERIALIZER = 'pickle'
 
-# Redis
+if IS_TEST:
+    CELERY_TASK_ALWAYS_EAGER = True
+    CELERY_TASK_EAGER_PROPAGATES = True
+
+# --- Redis --- #
 REDIS_HOST = 'redis'
 REDIS_PORT = 6379
 
-# Debug toolbar
+# --- Debug Toolbar --- #
 DEBUG_TOOLBAR_CONFIG = {'SHOW_TOOLBAR_CALLBACK': lambda _request: DEBUG}
 
-# bitcoind RPC
+# --- bitcoind RPC --- #
 RPC_VERSION = '2.0'
 RPC_HEADERS = {'content-type': 'application/json'}
 RPC_ID = 'bitcoin-monitor'
