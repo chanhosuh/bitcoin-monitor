@@ -8,6 +8,7 @@ class Transaction(TimeStampedModel):
     size = ...
     version = ...
     locktime = ...
+    hex = ...
 
     block = models.ForeignKey(
         'blocks.Block',
@@ -15,6 +16,20 @@ class Transaction(TimeStampedModel):
         on_delete=models.CASCADE,
         null=True,
     )
+
+    @property
+    def hash(self):
+        """ seems to be the same as txid """
+        return self.txid
+
+    @property
+    def vsize(self):
+        """ seems to be the same as size """
+        return self.size
+
+
+# from bitcoind RPC output
+['txid', 'hash', 'version', 'size', 'vsize', 'locktime', 'vin', 'vout', 'hex']
 
 
 class TransactionInput(TimeStampedModel):
