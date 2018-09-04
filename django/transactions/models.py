@@ -1,14 +1,17 @@
 from django.db import models
+
 from model_utils.models import TimeStampedModel
+
+from core.model_fields import HashField
 
 
 class Transaction(TimeStampedModel):
 
-    txid = ...
-    size = ...
-    version = ...
-    locktime = ...
-    hex = ...
+    txid = HashField()
+    size = models.PositiveIntegerField()
+    version = models.PositiveIntegerField()
+    locktime = models.PositiveIntegerField()
+    hex = models.CharField()  # serialized, hex-encoded transaction data
 
     block = models.ForeignKey(
         'blocks.Block',
@@ -17,15 +20,16 @@ class Transaction(TimeStampedModel):
         null=True,
     )
 
-    @property
-    def hash(self):
-        """ seems to be the same as txid """
-        return self.txid
-
-    @property
-    def vsize(self):
-        """ seems to be the same as size """
-        return self.size
+# differs for witness transactions
+#     @property
+#     def hash(self):
+#         """ seems to be the same as txid """
+#         return self.txid
+#
+#     @property
+#     def vsize(self):
+#         """ seems to be the same as size """
+#         return self.size
 
 
 # from bitcoind RPC output
@@ -40,10 +44,12 @@ class TransactionInput(TimeStampedModel):
         on_delete=models.CASCADE,
     )
 
-    txid = ...
-    vout = ...
-    script_sig = ...
-    sequence = ...
+    # identify unspent transaction output
+    txid = HashField()
+    vout = models.PositiveIntegerField()
+
+    # script_sig = models.CharField()
+    sequence = models.PositiveIntegerField()
 
 
 class TransactionOutput(TimeStampedModel):
@@ -54,6 +60,6 @@ class TransactionOutput(TimeStampedModel):
         on_delete=models.CASCADE,
     )
 
-    value = models.IntegerField(null=False)
-    n = ...
-    script_pub_key = ...
+    value = models.IntegerField()
+    n = models.PositiveIntegerField()
+    # script_pub_key = models.CharField()

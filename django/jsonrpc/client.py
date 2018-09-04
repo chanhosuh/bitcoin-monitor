@@ -1,9 +1,11 @@
+import functools
 import json
+
 import requests
 
 from bitcoin_monitor import settings
+
 from . import RpcError
-import functools
 
 
 class RpcClientError(RpcError):
@@ -71,6 +73,16 @@ class RpcClient:
             data=payload,
         )
         return response
+
+    @jsonify_response
+    def get_block_count(self):
+        """ return number of blocks in local best chain """
+        return self._call_method('getblockcount', rpc_params=[])
+
+    @jsonify_response
+    def get_block_hash(self, height):
+        """ return block hash at given height in local best chain """
+        return self._call_method('getblockhash', rpc_params=[height])
 
     @jsonify_response
     def get_best_block_hash(self):

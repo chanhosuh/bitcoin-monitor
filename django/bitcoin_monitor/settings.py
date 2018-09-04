@@ -10,11 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
-import os
 import datetime
-from distutils.util import strtobool
 import logging
+import os
 import sys
+from distutils.util import strtobool
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -52,6 +52,7 @@ INSTALLED_APPS = [
 
     # Our apps
     'bitcoin_monitor.apps.BitcoinMonitorConfig',
+    'blocks.apps.BlocksConfig',
 ]
 
 MIDDLEWARE = [
