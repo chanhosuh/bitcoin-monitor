@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     # Our apps
     'bitcoin_monitor.apps.BitcoinMonitorConfig',
     'blocks.apps.BlocksConfig',
+    'transactions.apps.TransactionsConfig',
 ]
 
 MIDDLEWARE = [
@@ -202,6 +203,11 @@ CELERY_BROKER_URL = 'redis://{}:{}/0'.format(
     CELERY_BROKER_HOST['hostname'],
     CELERY_BROKER_HOST['port'],
 )
+
+# can't use redis yet as backend due to Celery conflict
+# with Python 3.7
+# CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+
 CELERY_ACCEPT_CONTENT = ['pickle']
 CELERY_TASK_SERIALIZER = 'pickle'
 CELERY_RESULT_SERIALIZER = 'pickle'

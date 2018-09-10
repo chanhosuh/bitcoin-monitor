@@ -1,23 +1,25 @@
+"""
+http://chainquery.com/bitcoin-api/getrawtransaction
+"""
 from django.db import models
 
 from model_utils.models import TimeStampedModel
 
-from core.model_fields import HashField
+from core.model_fields import BitcoinField, HexField
 
 
 class Transaction(TimeStampedModel):
 
-    txid = HashField()
+    txid = HexField(max_length=64, unique=True, help_text='transaction hash in hex (32 bytes)')
     size = models.PositiveIntegerField()
     version = models.PositiveIntegerField()
     locktime = models.PositiveIntegerField()
-    hex = models.CharField()  # serialized, hex-encoded transaction data
+    # hex = HexField(max_length=256)  # serialized, hex-encoded transaction data
 
     block = models.ForeignKey(
         'blocks.Block',
         related_name='transactions',
         on_delete=models.CASCADE,
-        null=True,
     )
 
 # differs for witness transactions
@@ -45,11 +47,16 @@ class TransactionInput(TimeStampedModel):
     )
 
     # identify unspent transaction output
-    txid = HashField()
+    txid = HexField(max_length=64, unique=True, help_text='transaction hash in hex (32 bytes)')
     vout = models.PositiveIntegerField()
 
+    # "scriptSig": {     (json object) The script
+    #   "asm": "asm",  (string) asm
+    #   "hex": "hex"   (string) hex
+    # },
+    # "sequence": n      (numeric) The script sequence number
     # script_sig = models.CharField()
-    sequence = models.PositiveIntegerField()
+    # sequence = models.PositiveIntegerField()
 
 
 class TransactionOutput(TimeStampedModel):
@@ -60,6 +67,17 @@ class TransactionOutput(TimeStampedModel):
         on_delete=models.CASCADE,
     )
 
-    value = models.IntegerField()
+    value = BitcoinField()
     n = models.PositiveIntegerField()
+
+    # "scriptPubKey" : {          (json object)
+    #   "asm" : "asm",          (string) the asm
+    #   "hex" : "hex",          (string) the hex
+    #   "reqSigs" : n,            (numeric) The required sigs
+    #   "type" : "pubkeyhash",  (string) The type, eg 'pubkeyhash'
+    #   "addresses" : [           (json array of string)
+    #     "address"        (string) bitcoin address
+    #     ,...
+    #   ]
+    # }
     # script_pub_key = models.CharField()
