@@ -1,6 +1,11 @@
+import logging
+
 from blocks.models import Block
 
 from . import celery_app
+
+
+logger = logging.getLogger(__name__)
 
 
 @celery_app.task(bind=True, ignore_result=True, max_retries=1)
@@ -21,7 +26,7 @@ def process_block(self, block):
     version = block['version']
     merkle_root = block['merkleroot']
     time = block['time']
-    median_time = block['median_time']
+    median_time = block['mediantime']
     nonce = block['nonce']
     bits = block['bits']
     difficulty = block['difficulty']
@@ -47,6 +52,7 @@ def process_block(self, block):
         previous_block_hash=previous_block_hash,
         next_block_hash=next_block_hash,
     )
+    logger.debug('Created block %s', hash)
 
 
 @celery_app.task(bind=True, ignore_result=True, max_retries=1)
