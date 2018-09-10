@@ -147,7 +147,7 @@ DEFAULT_LOGGING_FORMAT = '[%(levelname)s][%(name)s] %(asctime)s: %(message)s'
 CELERY_LOGGING_FORMAT = '[%(levelname)s][%(process)s][%(name)s] %(asctime)s: %(message)s'
 
 CONTAINER_NAME = os.environ.get('CONTAINER_NAME', '')
-if CONTAINER_NAME == 'worker':
+if CONTAINER_NAME == 'celery':
     LOGGING_FORMAT = CELERY_LOGGING_FORMAT
 else:
     LOGGING_FORMAT = DEFAULT_LOGGING_FORMAT
