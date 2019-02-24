@@ -1,6 +1,5 @@
 from decimal import ROUND_HALF_EVEN, Decimal, InvalidOperation
 from functools import total_ordering
-from typing import Union
 
 from django.utils.deconstruct import deconstructible
 
@@ -36,7 +35,7 @@ class Bitcoin:
 
     DECIMAL_PLACES = 8  # minimal unit is 1e-8, a "satoshi"
 
-    def __init__(self, value: Union[Decimal, str, int]='0'):
+    def __init__(self, value):
         try:
             self.decimal = self.quantize_to_currency(Decimal(value))
         except (InvalidOperation, TypeError):
@@ -49,12 +48,12 @@ class Bitcoin:
     def _is_bitcoin(self, operand):
         return isinstance(operand, Bitcoin)
 
-    def __eq__(self, other: Union['Bitcoin', None]):
+    def __eq__(self, other):
         if self._is_bitcoin(other):
             return self.decimal == other.decimal
         return False
 
-    def __lt__(self, other: 'Bitcoin'):
+    def __lt__(self, other):
         if self._is_bitcoin(other):
             return self.decimal < other.decimal
         return NotImplemented
@@ -68,27 +67,27 @@ class Bitcoin:
     def __neg__(self):
         return Bitcoin(-1 * self.decimal)
 
-    def __add__(self, other: 'Bitcoin'):
+    def __add__(self, other):
         if not self._is_bitcoin(other):
             raise BitcoinTypeError('Cannot add Bitcoin object to non-Bitcoin object.')
         return Bitcoin(self.decimal + other.decimal)
 
-    def __sub__(self, other: 'Bitcoin'):
+    def __sub__(self, other):
         if not self._is_bitcoin(other):
             raise BitcoinTypeError('Cannot subtract non-Bitcoin object from Bitcoin object.')
         return Bitcoin(self.decimal - other.decimal)
 
-    def __rsub__(self, other: 'Bitcoin'):
+    def __rsub__(self, other):
         if not self._is_bitcoin(other):
             raise BitcoinTypeError('Cannot subtract Bitcoin object from non-Bitcoin object.')
         return Bitcoin(other.decimal - self.decimal)
 
-    def __mul__(self, other: Union[Decimal, int]):
+    def __mul__(self, other):
         if self._is_bitcoin(other):
             raise BitcoinTypeError('Cannot multiply Bitcoin object by another Bitcoin object.')
         return Bitcoin(self.decimal * other)
 
-    def __truediv__(self, other: Union[Decimal, int, 'Bitcoin']):
+    def __truediv__(self, other):
         if isinstance(other, Bitcoin):
             return self.decimal / other.decimal
         return Bitcoin(self.decimal / other)
