@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+# tweaked the answer from
+# https://stackoverflow.com/a/49265008/1175053
+for file in `git diff --name-only --cached --diff-filter=d | grep '\.py$'`; do
+    echo "isort: processing $file"
+    if `git diff --quiet "$file"`; then
+        # no dirty version in working tree,
+        # isort the file directly and git-add
+        isort "$file"
+        git add --verbose "$file"
+    else
+        # need to leave working tree untouched, so 
+        # save staged contents of file to temp file
+        # and process that
+        git show ":$file" > "$file.isort.tmp"
+        isort "$file.isort.tmp"
+        # manually create the blob from modified temp
+        # file and update the original file in the index
+        hash=`git hash-object -w "$file.isort.tmp"`
+        git update-index --add --verbose --cacheinfo 100644 "$hash" "$file"
+        # cleanup after yourself!
+        rm "$file.isort.tmp"
+    fi
+done
+
+# If no files left in index after formatting - fail
+ret=0
+if `git diff --staged --quiet`; then
+    1>&2 echo "isort: No files to commit after isort-ing"
+    exit 1
+fi
+

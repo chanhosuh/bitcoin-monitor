@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+# flake8 config location
+CONFIG_FILE=''
+
+RET_VAL=0
+
+RESTORE='\033[0m'
+RED='\033[00;31m'
+BOLD=$(tty -s && tput bold)
+
+temp_files=()
+for file in `git diff --name-only --cached --diff-filter=d | grep '\.py$'`; do
+    if `git diff --quiet "$file"`; then
+        # no dirty version in working tree,
+        temp_files+=("$file")
+    else
+        # need to leave working tree untouched, so 
+        # save staged contents of file to temp file
+        git show ":$file" > "$file.flake8.tmp"
+        temp_files+=("$file.flake8.tmp")
+    fi
+done
+
+echo ${temp_files[@]} | xargs flake8 --config="$CONFIG_FILE" --quiet
+RET_VAL=$?
+
+for file in ${temp_files[@]}; do
+    if [[ "$file" == *.flake8.tmp ]]; then
+        rm "$file"
+    fi
+done
+
+if [ "$RET_VAL" -ne 0 ]; then
+    echo -e "${BOLD}flake8: ${RED}FAILED ${RESTORE}checks"
+fi
+
+exit "$RET_VAL"
+

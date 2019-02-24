@@ -152,3 +152,9 @@ coverage:
 	@echo "test coverage report complete 📊"
 	@docker cp "$(shell docker ps | grep 'loanstreet-rebuild_django' | cut -d ' ' -f1)":/code/htmlcov /tmp
 	@python -m webbrowser "file:///tmp/htmlcov/index.html"
+
+.PHONY: hooks
+hooks:
+	@echo "installing git hooks..."
+	cp hooks/* .git/hooks/
+	

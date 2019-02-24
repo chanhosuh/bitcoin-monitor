@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# https://stackoverflow.com/a/41249693/1175053
+
+RESTORE='\033[0m'
+RED='\033[00;31m'
+YELLOW='\033[00;33m'
+BLUE='\033[00;34m'
+
+FORBIDDEN=(
+    '# NOCOMMIT'
+    'import pdb'
+    'pdb.set_trace'
+    'import ipdb'
+    'ipdb.set_trace'
+    'breakpoint()'
+)
+FOUND=''
+
+for j in "${FORBIDDEN[@]}"; do
+  for i in `git diff --cached --name-only | grep '\.py$'`; do
+    # the trick is here...use `git show :file` to output what is staged
+    # test it against each of the FORBIDDEN strings ($j)
+    if echo `git show :$i` | grep -q "$j"; then
+      FOUND+="forbidden: ${BLUE}$i ${RESTORE}contains ${YELLOW}\"$j\"${RESTORE}\n"
+    fi
+  done
+done
+
+if [[ ! -z $FOUND ]]; then
+  printf "$FOUND"
+  printf "forbidden: commit ${RED}REJECTED${RESTORE}\n"
+  exit 1
+fi
+
+exit 0
