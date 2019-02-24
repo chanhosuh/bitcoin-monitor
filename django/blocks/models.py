@@ -93,7 +93,7 @@ class Block(TimeStampedModel):
     # string
     bits = HexField(max_length=8)
     # float
-    difficulty = models.DecimalField(decimal_places=10, max_digits=20)
+    difficulty = models.DecimalField(decimal_places=10, max_digits=25)
     # expected number of hashes to produce blockchain up to this block, in hex
     # chain_work = models.CharField()
     # len of tx: int
