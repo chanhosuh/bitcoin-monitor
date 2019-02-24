@@ -27,7 +27,7 @@ def read_blocks():
 
         process_block.si(block_data).apply()
         for transaction_data in all_transaction_data:
-            process_transaction.si(transaction_data).delay()
+            process_transaction.si(transaction_data, block_hash).delay()
 
 
 class Command(BaseCommand):

@@ -1,6 +1,7 @@
 import logging
 
 from blocks.models import Block
+from core.bitcoin import Bitcoin
 from transactions.models import Transaction, TransactionInput, TransactionOutput
 
 from . import celery_app
@@ -53,11 +54,11 @@ def process_block(self, block_data):
         previous_block_hash=previous_block_hash,
         next_block_hash=next_block_hash,
     )
-    logger.debug('Created block %s', hash)
+    logger.debug('Created block %s', hash_)
 
 
 @celery_app.task(bind=True, ignore_result=True, max_retries=1)
-def process_transaction(self, transaction_data):
+def process_transaction(self, transaction_data, block_hash):
     """
     :param transaction_data:
     """
@@ -67,7 +68,12 @@ def process_transaction(self, transaction_data):
     locktime = transaction_data['locktime']
     # hex_ = transaction_data['hex']
 
-    block_hash = transaction_data['blockhash']
+    # For some reason, block hash is missing, even with verbosity=2,
+    # which according to bitcoin core docs, should have it;
+    # instead, we pass it in, since all transactions we process
+    # are coming from a block anyway.
+    # --------------------------------------
+    # block_hash = transaction_data['blockhash']
     block = Block.objects.get(hash=block_hash)
 
     transaction = Transaction.objects.create(
@@ -91,7 +97,7 @@ def process_transaction(self, transaction_data):
         logger.debug('Created input for %s', txid_)
 
     for t_output in transaction_data['vout']:
-        value = t_output['value']
+        value = Bitcoin(t_output['value'])
         n = t_output['n']
         TransactionOutput.objects.create(
             value=value,
