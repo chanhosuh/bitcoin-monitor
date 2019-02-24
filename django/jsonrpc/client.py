@@ -12,7 +12,7 @@ class RpcClientError(RpcError):
     pass
 
 
-def jsonify_response(func):
+def decode_json_response(func):
 
     @functools.wraps(func)
     def inner(*args, **kwargs):
@@ -21,11 +21,11 @@ def jsonify_response(func):
             raise RpcClientError(
                 str(response.status_code) + ' error: ' + response.reason
             )
-        response_json = response.json()
-        if 'error' in response_json and response_json['error']:
-            raise RpcClientError(response_json['error'])
+        decoded_json = response.json()
+        if 'error' in decoded_json and decoded_json['error']:
+            raise RpcClientError(decoded_json['error'])
 
-        return response_json['result']
+        return decoded_json['result']
 
     return inner
 
@@ -74,21 +74,21 @@ class RpcClient:
         )
         return response
 
-    @jsonify_response
+    @decode_json_response
     def get_block_count(self):
         """ return number of blocks in local best chain """
         return self._call_method('getblockcount', rpc_params=[])
 
-    @jsonify_response
+    @decode_json_response
     def get_block_hash(self, height):
         """ return block hash at given height in local best chain """
         return self._call_method('getblockhash', rpc_params=[height])
 
-    @jsonify_response
+    @decode_json_response
     def get_best_block_hash(self):
         return self._call_method('getbestblockhash', rpc_params=[])
 
-    @jsonify_response
+    @decode_json_response
     def get_block(self, block_hash, verbosity=1):
         """
         :param block_hash: string, hash of the wanted block
