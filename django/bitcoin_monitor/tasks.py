@@ -2,7 +2,7 @@ import logging
 
 from blocks.models import Block
 from core.bitcoin import Bitcoin
-from transactions.models import Transaction, TransactionInput, TransactionOutput
+from transactions.models import CoinbaseTransaction, Transaction, TransactionInput, TransactionOutput
 
 from . import celery_app
 
@@ -87,19 +87,28 @@ def process_transaction(self, transaction_data, block_hash):
     logger.debug('Created transaction %s', txid_)
 
     for t_input in transaction_data['vin']:
-        txid = t_input['txid']
-        vout = t_input['vout']
-        TransactionInput.objects.create(
-            transaction=transaction,
-            txid=txid,
-            vout=vout,
-        )
-        logger.debug('Created input for %s', txid_)
+        if 'coinbase' in t_input:
+            CoinbaseTransaction.objects.create(
+                coinbase=t_input['coinbase'],
+                sequence=t_input['sequence'],
+            )
+            logger.debug('Created coinbase input')
+        else:
+            txid = t_input['txid']
+            vout = t_input['vout']
+            TransactionInput.objects.create(
+                transaction=transaction,
+                txid=txid,
+                vout=vout,
+            )
+            logger.debug('Created input for %s', txid_)
 
     for t_output in transaction_data['vout']:
+        print(t_output)
         value = Bitcoin(t_output['value'])
         n = t_output['n']
         TransactionOutput.objects.create(
+            transaction=transaction,
             value=value,
             n=n,
         )

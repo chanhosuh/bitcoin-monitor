@@ -26,7 +26,7 @@ class ModifiedDecimalBaseField(models.DecimalField):
 
 class BitcoinField(ModifiedDecimalBaseField):
     """
-    Standardized Decimal representation of money.
+    Standardized Decimal representation of bitcoin amount.
     """
     description = _('Bitcoin as a standardized Decimal number.')
 

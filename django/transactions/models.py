@@ -8,6 +8,12 @@ from model_utils.models import TimeStampedModel
 from core.model_fields import BitcoinField, HexField
 
 
+class CoinbaseTransaction(TimeStampedModel):
+
+    coinbase = HexField(max_length=200)
+    sequence = models.BigIntegerField()
+
+
 class Transaction(TimeStampedModel):
 
     txid = HexField(max_length=64, unique=True, help_text='transaction hash in hex (32 bytes)')
@@ -47,8 +53,11 @@ class TransactionInput(TimeStampedModel):
     )
 
     # identify unspent transaction output
-    txid = HexField(max_length=64, unique=True, help_text='transaction hash in hex (32 bytes)')
+    txid = HexField(max_length=64, help_text='transaction hash in hex (32 bytes)')
     vout = models.PositiveIntegerField()
+
+    class Meta:
+        unique_together = (('txid', 'vout'), )
 
     # "scriptSig": {     (json object) The script
     #   "asm": "asm",  (string) asm
