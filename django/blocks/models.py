@@ -86,10 +86,10 @@ class Block(TimeStampedModel):
     # tx = ...  # use foreign key from transaction to block
     # block time in seconds since unix epoch
     time = models.PositiveIntegerField()
-    # mediam block time in seconds since unix epoch
+    # median block time in seconds since unix epoch
     median_time = models.PositiveIntegerField()
     # puzzle nonce: int
-    nonce = models.PositiveIntegerField()
+    nonce = models.BigIntegerField()
     # string
     bits = HexField(max_length=8)
     # float
