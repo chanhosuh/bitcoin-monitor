@@ -13,14 +13,21 @@ Monitor and persist Bitcoin on-chain data to Postgres.
   - `make logs` will re-attach you to logging
 - stop the container:
   - `make down`
-- check RPC client works:
+- check everything works:
   - start the containers if they aren't running (`make up`)
-  - `make bash` (will drop you in a bash shell inside the `django` container)
-  - `python -m jsonrpc.client` (runs the "main" code in the `jsonrpc.client` module)
-  - you should see JSON output of a block's contents
-    - if not, you can debug with [pdb][pdb guide] by putting a `import ipdb; ipdb.set_trace()` line inside the main code in the client module and running the script again.
-
-[pdb guide]: https://pymotw.com/3/pdb/
+  - `make status` (should show local blockchain info)
+- interactive usage of the python Rpc client:
+  - `make ipython` (will drop you in an ipython shell inside the `django` container)
+  - `from jsonrpc.client import RpcClient`\
+    `client = RpcClient()`\
+    `block_hash = client.get_best_block_hash()`\
+    `client.get_block(block_hash)`
+- direct usage of bitcoind's rpc client, `bitcoin-cli`:
+  - `make bash name=bitcoind` (will drop you in a bash shell inside the `bitcoind` container)
+  - `bitcoin-cli getbestblockhash` (should return a hash)
+  - `bitcoin-cli help` (shows more commands)
+- `make help` will show more `make` commands
 
 ## References
-[Mastering Bitcoin, chapter 3](https://github.com/bitcoinbook/bitcoinbook/blob/develop/ch03.asciidoc), intro to `bitcoind`
+* [Mastering Bitcoin, chapter 3](https://github.com/bitcoinbook/bitcoinbook/blob/develop/ch03.asciidoc): intro to `bitcoind`
+* [ChainQuery](http://chainquery.com/bitcoin-api): useful web interface to learn about `bitcoin-cli`
