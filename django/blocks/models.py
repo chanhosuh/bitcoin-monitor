@@ -101,6 +101,12 @@ class Block(TimeStampedModel):
     previous_block_hash = HexField(max_length=64)
     next_block_hash = HexField(max_length=64, null=True)
 
+    def __repr__(self):
+        return f'<Block height={self.height}, hash={self.hash}>'
+
+    def __str__(self):
+        return self.hash
+
 #
 # class BlockHeader(TimeStampedModel):
 #
