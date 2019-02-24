@@ -1,7 +1,4 @@
-
 .DEFAULT_GOAL := help
-
-TODAY := $(shell date -u +%Y%m%d)
 
 .PHONY: help
 help:
@@ -26,11 +23,11 @@ help:
 	@echo "lint              Linting checks through flake8"
 	@echo ""
 	@echo "DATA:"
-	@echo "nuke_db           Delete Postgres and Redis data"
-	@echo "clear_redis       Delete all the keys in Redis"
+	@echo "nuke_db           Delete Postgres data"
 	@echo ""
 	@echo "MAINTENANCE:"
 	@echo "clean		     Delete stopped containers and dangling images"
+	@echo "hooks             Install git hooks"
 	@echo ""
 
 .PHONY: build
@@ -115,18 +112,11 @@ status:
 
 .PHONY: nuke_db
 nuke_db:
-	@read -r -p "WARNING: this will delete all data from Postgres and Redis (ctrl-c to exit / any other key to continue)." input
+	@read -r -p "WARNING: this will delete all data from Postgres (ctrl-c to exit / any other key to continue)." input
 	@make down
-	@docker-compose rm --force --stop -v redis
 	@docker-compose rm --force --stop -v db
 	@docker volume rm loanstreet-rebuild_db-data
-	@echo "Postgres and Redis data deleted 💣"
-
-.PHONY: clear_redis
-clear_redis:
-	@read -r -p "WARNING: this will clear all Redis data (ctrl-C to exit / any other key to continue)." input
-	@docker-compose rm --force --stop -v redis
-	@docker-compose up -d redis
+	@echo "Postgres data deleted 💣"
 
 .PHONY: test
 test:
