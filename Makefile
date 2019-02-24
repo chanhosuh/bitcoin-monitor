@@ -26,7 +26,7 @@ help:
 	@echo "nuke_db           Delete Postgres data"
 	@echo ""
 	@echo "MAINTENANCE:"
-	@echo "clean		     Delete stopped containers and dangling images"
+	@echo "clean             Delete stopped containers and dangling images"
 	@echo "hooks             Install git hooks"
 	@echo ""
 
