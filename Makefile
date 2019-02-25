@@ -1,33 +1,43 @@
+# ANSI escape codes
+BOLD := \033[1m
+RESET := \033[0m
+REVERSE := \033[7m
+RED := \033[0;31m
+
 .DEFAULT_GOAL := help
 
 .PHONY: help
 help:
 	@echo ""
 	@echo "OPERATE:"
-	@echo "up                Start containers"
-	@echo "down              Stop containers"
-	@echo "restart           Stop then start containers"
-	@echo "build             Build images"
-	@echo "rebuild           Stop, build, then start containers"
+	@echo "build                    Build images"
+	@echo "up                       Start all containers"
+	@echo "down                     Stop all containers"
+	@echo "restart                  Stop then start containers"
+	@echo "rebuild                  Stop, build, then start containers"
 	@echo ""
 	@echo "DEBUGGING:"
-	@echo "logs              Re-attach to all logging output"
-	@echo "log               Re-attach to specified container log"
-	@echo "bash              Bash inside a container (default=django)"
-	@echo "ipython           Interactive console inside django container"
-	@echo "status            Blockchain status info from bitcoind"
+	@echo "logs                     Re-attach to running container logs"
+	@echo "log                      Re-attach to specified running container log"
+	@echo "ps                       List running container info"
+	@echo "bash                     Bash inside a container (default=django)"
+	@echo "ipython                  Interactive console inside django container"
+	@echo "status                   Blockchain status info from bitcoind"
 	@echo ""
 	@echo "TEST:"
-	@echo "test              Execute tests on running containers"
-	@echo "coverage          Run test coverage analysis and generate html report"
-	@echo "lint              Linting checks through flake8"
+	@echo "test                     Run python unit tests"
+	@echo "coverage                 Run test coverage report"
+	@echo "lint                     Linting checks through flake8 and pylint"
+	@echo "flake8                   Lint using flake8"
+	@echo "pylint                   Lint using pylint"
 	@echo ""
 	@echo "DATA:"
-	@echo "nuke_db           Delete Postgres data"
+	@echo "nuke_db                  Delete Postgres data"
 	@echo ""
 	@echo "MAINTENANCE:"
-	@echo "clean             Delete stopped containers and dangling images"
-	@echo "hooks             Install git hooks"
+	@echo "clean                    Remove dangling images and exited containers"
+	@echo "requirements             Generate requirements.txt from requirements_base.txt"
+	@echo "hooks                    Install Git hooks"
 	@echo ""
 
 .PHONY: build
@@ -125,15 +135,6 @@ test:
 	docker-compose exec django  sh -c "manage.py test --noinput"
 	@echo "Tests passed 🏁"
 
-.PHONY: lint
-lint:
-	@echo "flake8 django"
-	@if ! flake8 django; then \
-	    echo "flake8: \033[00;31mFAILED\033[0m checks" ;\
-	    exit 1 ;\
-	fi
-	@echo "flake8 passed 🥇"
-
 .PHONY: coverage
 coverage:
 	-docker-compose exec django coverage run manage.py test
@@ -143,13 +144,56 @@ coverage:
 	@docker cp "$(shell docker ps | grep 'loanstreet-rebuild_django' | cut -d ' ' -f1)":/code/htmlcov /tmp
 	@python -m webbrowser "file:///tmp/htmlcov/index.html"
 
-.PHONY: hooks
-hooks:
-	@echo "installing git hooks..."
-	cp hooks/* .git/hooks/
-	
 # https://stackoverflow.com/a/51866793/1175053
 .PHONY: clean_logs
 clean_logs:
 	docker run -it --rm --privileged --pid=host alpine:latest nsenter -t 1 -m -u -n -i -- sh -c 'truncate -s0 /var/lib/docker/containers/*/*-json.log'
 
+.PHONY: lint
+lint:
+	@echo ""
+	@echo "make flake8 => make pylint"
+	@echo ""
+	@make flake8
+	@echo ""
+	@make pylint
+	@echo ""
+	@echo "Linting checks passed 🏆"
+
+.PHONY: flake8
+flake8:
+	@echo "$(REVERSE)Running$(RESET) $(BOLD)flake8$(RESET)..."
+	@if ! flake8 ; then \
+	    echo "$(BOLD)flake8$(RESET): $(RED)FAILED$(RESET) checks" ;\
+	    exit 1 ;\
+	fi
+	@echo "flake8 passed 🍄"
+
+.PHONY: pylint
+pylint:
+	@echo "$(REVERSE)Running$(RESET) $(BOLD)pylint$(RESET)..."
+	@echo ""
+	@travis/check_pylint_score.py
+	@echo ""
+	@echo "pylint passed ⚙️"
+
+.PHONY: hooks
+hooks:
+	@echo "Installing git hooks..."
+	cp ./hooks/{commit-msg,pre-commit*} .git/hooks/
+	@echo "Hooks installed"
+
+.PHONY: requirements
+requirements:
+	@echo "Generating requirements.txt from core dependencies in requirements_base.txt ..."
+	pip install virtualenvwrapper && \
+	source virtualenvwrapper.sh && \
+	wipeenv && \
+    	pip install -r django/requirements_base.txt && \
+    	echo '# generated via "make requirements"' > django/requirements.txt && \
+    	pip freeze -r django/requirements_base.txt >> django/requirements.txt
+	@echo "requirements.txt has been updated 🍉"
+
+.PHONY: ps
+ps:
+	docker-compose ps
