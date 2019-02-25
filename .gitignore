@@ -12,6 +12,7 @@ db.sqlite3
 **/.DS_Store
 
 # coverage
+.coverage
 htmlcov/
 
 # Misc
