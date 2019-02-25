@@ -36,7 +36,7 @@ def process_block(self, block_data):
     previous_block_hash = block_data['previousblockhash']
     next_block_hash = block_data['nextblockhash']
 
-    block = Block.objects.create(
+    _, created = Block.objects.get_or_create(
         hash=hash_,
         confirmations=confirmations,
         size=size,
@@ -54,7 +54,8 @@ def process_block(self, block_data):
         previous_block_hash=previous_block_hash,
         next_block_hash=next_block_hash,
     )
-    logger.debug('Created block %s', hash_)
+    verb = 'created' if created else 'Skipping'
+    logger.debug('%s block %s', verb, hash_)
 
 
 @celery_app.task(bind=True, ignore_result=True, max_retries=1)
@@ -76,7 +77,7 @@ def process_transaction(self, transaction_data, block_hash):
     # block_hash = transaction_data['blockhash']
     block = Block.objects.get(hash=block_hash)
 
-    transaction = Transaction.objects.create(
+    transaction, created = Transaction.objects.get_or_create(
         txid=txid_,
         size=size,
         version=version,
@@ -84,11 +85,12 @@ def process_transaction(self, transaction_data, block_hash):
         # hex=hex_,
         block=block,
     )
-    logger.debug('Created transaction %s', txid_)
+    verb = 'created' if created else 'Skipping'
+    logger.debug('%s transaction %s', verb, txid_)
 
     for t_input in transaction_data['vin']:
         if 'coinbase' in t_input:
-            CoinbaseTransaction.objects.create(
+            CoinbaseTransaction.objects.get_or_create(
                 coinbase=t_input['coinbase'],
                 sequence=t_input['sequence'],
             )
@@ -96,20 +98,21 @@ def process_transaction(self, transaction_data, block_hash):
         else:
             txid = t_input['txid']
             vout = t_input['vout']
-            TransactionInput.objects.create(
+            _, created = TransactionInput.objects.get_or_create(
                 transaction=transaction,
                 txid=txid,
                 vout=vout,
             )
-            logger.debug('Created input for %s', txid_)
+            verb = 'created' if created else 'Skipping'
+            logger.debug('%s input for %s', verb, txid_)
 
     for t_output in transaction_data['vout']:
-        print(t_output)
         value = Bitcoin(t_output['value'])
         n = t_output['n']
-        TransactionOutput.objects.create(
+        _, created = TransactionOutput.objects.get_or_create(
             transaction=transaction,
             value=value,
             n=n,
         )
-        logger.debug('Created output for %s', txid_)
+        verb = 'created' if created else 'Skipping'
+        logger.debug('%s output for %s', verb, txid_)
