@@ -10,7 +10,7 @@ from jsonrpc.client import RpcClient
 logger = logging.getLogger(__name__)
 
 
-def read_blocks():
+def _process_blockchain():
     rpc_client = RpcClient()
     chain_length = rpc_client.get_block_count()
     logger.info('Blockchain length: %s', chain_length)
@@ -35,5 +35,5 @@ class Command(BaseCommand):
     so that it will restart upon any code change """
 
     def handle(self, *args, **options):
-        logger.info('Autoreloading read_blocks ...')
-        autoreload.main(read_blocks)
+        logger.info('Autoreloading process_blockchain...')
+        autoreload.main(_process_blockchain)
