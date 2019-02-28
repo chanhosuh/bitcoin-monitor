@@ -2,7 +2,7 @@ import logging
 
 from blocks.models import Block
 from core.bitcoin import Bitcoin
-from transactions.models import CoinbaseTransaction, Transaction, TransactionInput, TransactionOutput
+from transactions.models import UTXO, CoinbaseTransaction, Transaction, TransactionOutput
 
 from . import celery_app
 
@@ -98,7 +98,7 @@ def process_transaction(self, transaction_data, block_hash):
         else:
             txid = t_input['txid']
             vout = t_input['vout']
-            _, created = TransactionInput.objects.get_or_create(
+            _, created = UTXO.objects.get_or_create(
                 transaction=transaction,
                 txid=txid,
                 vout=vout,

@@ -11,13 +11,8 @@ class InputInline(admin.TabularInline):
     model = TransactionInput
 
 
-class CoinbaseInline(admin.TabularInline):
-    model = CoinbaseTransaction
-
-
 class TransactionAdmin(admin.ModelAdmin):
     inlines = [
-        CoinbaseInline,
         InputInline,
         OutputInline,
     ]

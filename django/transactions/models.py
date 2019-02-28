@@ -4,11 +4,21 @@ http://chainquery.com/bitcoin-api/getrawtransaction
 from django.db import models
 
 from model_utils.models import TimeStampedModel
+from polymorphic.models import PolymorphicModel
 
 from core.model_fields import BitcoinField, HexField
 
 
-class CoinbaseTransaction(TimeStampedModel):
+class TransactionInput(PolymorphicModel, TimeStampedModel):
+
+    transaction = models.ForeignKey(
+        'transactions.Transaction',
+        related_name='vin',
+        on_delete=models.CASCADE,
+    )
+
+
+class CoinbaseTransaction(TransactionInput):
 
     coinbase = HexField(max_length=200)
     sequence = models.BigIntegerField()
@@ -44,13 +54,7 @@ class Transaction(TimeStampedModel):
 ['txid', 'hash', 'version', 'size', 'vsize', 'locktime', 'vin', 'vout', 'hex']
 
 
-class TransactionInput(TimeStampedModel):
-
-    transaction = models.ForeignKey(
-        'transactions.Transaction',
-        related_name='vin',
-        on_delete=models.CASCADE,
-    )
+class UTXO(TransactionInput):
 
     # identify unspent transaction output
     txid = HexField(max_length=64, help_text='transaction hash in hex (32 bytes)')
