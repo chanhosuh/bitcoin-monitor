@@ -18,7 +18,7 @@ def _process_blockchain():
     # for now we have to traverse the blockchain backwards,
     # as we are pruning it to save storage
     for height in range(chain_length - 1, 0, -1):
-        logger.debug('height: %s', height)
+        logger.info('height: %s', height)
         block_hash = rpc_client.get_block_hash(height)
         logger.debug('Block hash: %s', block_hash)
 
@@ -31,8 +31,10 @@ def _process_blockchain():
 
 
 class Command(BaseCommand):
-    """ management command to run process using Django's autoreload functionality,
-    so that it will restart upon any code change """
+    """
+    management command to run process using Django's autoreload
+    functionality, so that it will restart upon any code change
+    """
 
     def handle(self, *args, **options):
         logger.info('Autoreloading process_blockchain...')
