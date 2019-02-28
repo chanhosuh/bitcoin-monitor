@@ -125,7 +125,7 @@ nuke_db:
 	@read -r -p "WARNING: this will delete all data from Postgres (ctrl-c to exit / any other key to continue)." input
 	@make down
 	@docker-compose rm --force --stop -v db
-	@docker volume rm loanstreet-rebuild_db-data
+	@docker volume rm bitcoin-monitor_db-data
 	@echo "Postgres data deleted 💣"
 
 .PHONY: test

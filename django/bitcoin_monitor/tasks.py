@@ -54,7 +54,7 @@ def process_block(self, block_data):
         previous_block_hash=previous_block_hash,
         next_block_hash=next_block_hash,
     )
-    verb = 'created' if created else 'Skipping'
+    verb = 'Created' if created else 'Skipping'
     logger.debug('%s block %s', verb, hash_)
 
 
@@ -85,7 +85,7 @@ def process_transaction(self, transaction_data, block_hash):
         # hex=hex_,
         block=block,
     )
-    verb = 'created' if created else 'Skipping'
+    verb = 'Created' if created else 'Skipping'
     logger.debug('%s transaction %s', verb, txid_)
 
     for t_input in transaction_data['vin']:
@@ -103,7 +103,7 @@ def process_transaction(self, transaction_data, block_hash):
                 txid=txid,
                 vout=vout,
             )
-            verb = 'created' if created else 'Skipping'
+            verb = 'Created' if created else 'Skipping'
             logger.debug('%s input for %s', verb, txid_)
 
     for t_output in transaction_data['vout']:
@@ -114,5 +114,5 @@ def process_transaction(self, transaction_data, block_hash):
             value=value,
             n=n,
         )
-        verb = 'created' if created else 'Skipping'
+        verb = 'Created' if created else 'Skipping'
         logger.debug('%s output for %s', verb, txid_)
