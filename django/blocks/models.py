@@ -53,6 +53,9 @@ Result (for verbosity = 2):
 }
 
 """
+import datetime
+
+from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.db import models
 
 from model_utils.models import TimeStampedModel
@@ -101,11 +104,19 @@ class Block(TimeStampedModel):
     previous_block_hash = HexField(max_length=64)
     next_block_hash = HexField(max_length=64, null=True)
 
+    class Meta:
+        ordering = ('-height', )
+
     def __repr__(self):
         return f'<Block height={self.height}, hash={self.hash}>'
 
     def __str__(self):
         return self.hash
+
+    @property
+    def age(self):
+        dt = datetime.datetime.utcfromtimestamp(self.time)
+        return naturaltime(dt)
 
 #
 # class BlockHeader(TimeStampedModel):
