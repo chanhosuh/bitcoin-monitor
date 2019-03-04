@@ -6,6 +6,8 @@ RED := \033[0;31m
 
 .DEFAULT_GOAL := help
 
+include ../docker-bitcoin/bitcoind/bitcoin.conf
+
 .PHONY: help
 help:
 	@echo ""
@@ -33,6 +35,7 @@ help:
 	@echo ""
 	@echo "DATA:"
 	@echo "nuke_db                  Delete Postgres data"
+	@echo "clear_redis              Delete all the keys in Redis"
 	@echo ""
 	@echo "MAINTENANCE:"
 	@echo "clean                    Remove dangling images and exited containers"
@@ -115,8 +118,8 @@ clean:
 status:
 	@docker-compose exec bitcoind bash -c "\
 	    bitcoin-cli \
-	    -rpcuser=user \
-	    -rpcpassword=password \
+	    --rpcuser=$(rpcuser) \
+	    --rpcpassword=$(rpcpassword) \
 	    getblockchaininfo\
 	"
 
@@ -127,6 +130,12 @@ nuke_db:
 	@docker-compose rm --force --stop -v db
 	@docker volume rm bitcoin-monitor_db-data
 	@echo "Postgres data deleted 💣"
+
+.PHONY: clear_redis
+clear_redis:
+	@read -r -p "WARNING: this will clear all Redis data (ctrl-C to exit / any other key to continue)." input
+	@docker-compose rm --force --stop -v redis
+	@docker-compose up -d redis
 
 .PHONY: test
 test:
