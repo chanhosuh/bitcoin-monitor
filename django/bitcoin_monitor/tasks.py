@@ -36,7 +36,7 @@ def process_block(self, block_data):
     previous_block_hash = block_data['previousblockhash']
     next_block_hash = block_data['nextblockhash']
 
-    _, created = Block.objects.get_or_create(
+    block, created = Block.objects.get_or_create(
         hash=hash_,
         confirmations=confirmations,
         size=size,
@@ -55,11 +55,12 @@ def process_block(self, block_data):
         next_block_hash=next_block_hash,
     )
     verb = 'Created' if created else 'Skipping'
-    logger.debug('%s block %s', verb, hash_)
+    logger.debug('%s block %s', verb, hash)
+    return block
 
 
 @celery_app.task(bind=True, ignore_result=True, max_retries=1)
-def process_transaction(self, transaction_data, block_hash):
+def process_transaction(self, transaction_data, block):
     """
     :param transaction_data:
     """
@@ -75,7 +76,7 @@ def process_transaction(self, transaction_data, block_hash):
     # are coming from a block anyway.
     # --------------------------------------
     # block_hash = transaction_data['blockhash']
-    block = Block.objects.get(hash=block_hash)
+    # block = Block.objects.get(hash=block_hash)
 
     transaction, created = Transaction.objects.get_or_create(
         txid=txid_,
