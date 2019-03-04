@@ -2,7 +2,7 @@ version: '3'
 
 services:
     bitcoind:
-        build: ./bitcoind
+        build: ../docker-bitcoin/bitcoind
         volumes:
             - "bitcoin-data:/data"
         networks:
@@ -10,7 +10,8 @@ services:
         stdin_open: true
         tty: true
         ports:
-            - "8000:8332"
+            - "8332:8332"
+            - "8333:8333"
 
     django:
         build: ./django
