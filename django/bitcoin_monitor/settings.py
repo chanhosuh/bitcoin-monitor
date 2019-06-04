@@ -228,3 +228,11 @@ RPC_VERSION = '2.0'
 RPC_HEADERS = {'content-type': 'application/json'}
 RPC_ID = 'bitcoin-monitor'
 RPC_URL = 'http://bitcoind:8332'
+
+# --- Jupyter Notebook --- #
+NOTEBOOK_ARGUMENTS = [
+    '--ip',
+    '0.0.0.0',
+    '--allow-root',
+    '--no-browser',
+]
