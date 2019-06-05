@@ -38,14 +38,19 @@ https://bitcoin.org/en/developer-reference#raw-transaction-format
 
 00000000 ................................... locktime: 0 (a block height)
 """
-import hashlib
+import logging
 from io import BytesIO
 
 from django.db import models
 
 from model_utils.models import TimeStampedModel
 
+from blocks.models import Block
+from core.hash_utils import hash256
 from core.model_fields import BitcoinField, HexField
+
+
+logger = logging.getLogger(__name__)
 
 
 def int_to_varint(x):
@@ -83,6 +88,41 @@ def int_from_varint(byte_stream):
         raise Exception()
 
     return int.from_bytes(int_bytes, 'little')
+
+
+def parse_block(byte_stream, height):
+    if isinstance(byte_stream, bytes):
+        byte_stream = BytesIO(byte_stream)
+
+    version = int.from_bytes(byte_stream.read(4), 'little')
+    prev_hash = byte_stream.read(32).hex()[::-1]
+    merkle_root = byte_stream.read(32).hex()[::-1]
+    timestamp = int.from_bytes(byte_stream.read(4), 'little')
+    bits = byte_stream.read(4).hex()
+    nonce = byte_stream.read(4).hex()
+
+    num_transactions = int_from_varint(byte_stream)
+
+    block, created = Block.objects.get_or_create(
+        height=height,
+        version=version,
+        prev_hash=prev_hash,
+        merkle_root=merkle_root,
+        timestamp=timestamp,
+        bits=bits,
+        nonce=nonce,
+        num_transactions=num_transactions,
+    )
+    created_or_skipped = 'created' if created else 'skipped'
+    logger.debug(f'block {created_or_skipped} at height {height}')
+
+    transactions = [parse_transaction(byte_stream) for _ in range(num_transactions)]
+
+    for transaction in transactions:
+        transaction.block = block
+        transaction.save()
+
+    return block
 
 
 def parse_transaction(byte_stream):
@@ -134,10 +174,6 @@ def parse_output(byte_stream):
         script_pubkey=script_pubkey,
     )
     return tx_output
-
-
-def hash256(byte_stream):
-    return hashlib.sha256(hashlib.sha256(byte_stream).digest()).digest()
 
 
 class Transaction(TimeStampedModel):

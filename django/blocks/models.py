@@ -60,49 +60,27 @@ from django.db import models
 
 from model_utils.models import TimeStampedModel
 
+from core.hash_utils import hash256
 from core.model_fields import HexField
 
 
 class Block(TimeStampedModel):
 
-    # header = models.OneToOneField('blocks.BlockHeader', on_delete=models.CASCADE)
-    hash = HexField(max_length=64, unique=True, help_text='block hash in hex (32 bytes)')
-    # integer, -1 means not on the best blockchain
-    confirmations = models.IntegerField()
+    prev_hash = HexField(max_length=64, unique=True, help_text='block hash in hex (32 bytes)')
 
-    # size of block in bytes
-    size = models.IntegerField()
-    # size of block, excluding witness data, in bytes
-    stripped_size = models.IntegerField()
-    # block weight (see BIP 141)
-    weight = models.IntegerField()
     # block height (zero-indexed)
     height = models.PositiveIntegerField()
+
     # block version
     version = models.PositiveIntegerField()
-    # block version in hex
-#     version_hex = models.CharField()
     # 32 byte hash in hex
     merkle_root = HexField(max_length=64)
-    # verbosity 1: array of transaction ids
-    # verbosity 2: array of JSON, getrawtransaction format
-    # tx = ...  # use foreign key from transaction to block
     # block time in seconds since unix epoch
-    time = models.PositiveIntegerField()
-    # median block time in seconds since unix epoch
-    median_time = models.PositiveIntegerField()
-    # puzzle nonce: int
-    nonce = models.BigIntegerField()
-    # string
+    timestamp = models.PositiveIntegerField()
     bits = HexField(max_length=8)
-    # float
-    difficulty = models.DecimalField(decimal_places=10, max_digits=25)
-    # expected number of hashes to produce blockchain up to this block, in hex
-    # chain_work = models.CharField()
-    # len of tx: int
-    number_of_transactions = models.PositiveIntegerField()
-    previous_block_hash = HexField(max_length=64)
-    next_block_hash = HexField(max_length=64, null=True)
+    nonce = HexField(max_length=8)
+
+    num_transactions = models.PositiveIntegerField()
 
     class Meta:
         ordering = ('-height', )
@@ -114,16 +92,21 @@ class Block(TimeStampedModel):
         return self.hash
 
     @property
-    def age(self):
-        dt = datetime.datetime.utcfromtimestamp(self.time)
-        return naturaltime(dt)
+    def hash(self):
+        return hash256(self.raw_header).hex()[::-1]
 
-#
-# class BlockHeader(TimeStampedModel):
-#
-#     version = models.IntegerField()
-#     hash_prev_block = models.CharField()
-#     hash_merkle_root = models.CharField()
-#     time = ...
-#     bits = ...
-#     nonce = ...
+    @property
+    def raw_header(self):
+        raw_header = b''
+        raw_header += self.version.to_bytes(4, 'little')
+        raw_header += bytes.fromhex(self.prev_hash[::-1])
+        raw_header += bytes.fromhex(self.merkle_root[::-1])
+        raw_header += self.timestamp.to_bytes(4, 'little')
+        raw_header += bytes.fromhex(self.bits)
+        raw_header += bytes.fromhex(self.nonce)
+        return raw_header
+
+    @property
+    def age(self):
+        dt = datetime.datetime.utcfromtimestamp(self.timestamp)
+        return naturaltime(dt)

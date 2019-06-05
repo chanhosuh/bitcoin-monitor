@@ -3,7 +3,7 @@ import logging
 from django.core.management.base import BaseCommand
 from django.utils import autoreload
 
-from bitcoin_monitor.tasks import process_block, process_transaction
+from bitcoin_monitor.tasks import process_block
 from jsonrpc.client import RpcClient
 
 
@@ -22,12 +22,8 @@ def _process_blockchain():
         block_hash = rpc_client.get_block_hash(height)
         logger.debug('Block hash: %s', block_hash)
 
-        block_data = rpc_client.get_block(block_hash)
-        raw_transactions = rpc_client.get_raw_transactions(block_hash)
-
-        block = process_block.si(block_data).apply().result
-        for raw_tx in raw_transactions:
-            process_transaction.si(raw_tx, block).delay()
+        raw_block = rpc_client.get_block(block_hash, verbosity=0)
+        process_block.si(raw_block, height).delay()
 
 
 class Command(BaseCommand):
