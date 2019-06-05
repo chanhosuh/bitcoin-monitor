@@ -157,9 +157,16 @@ def parse_input(byte_stream):
     prev_txid = byte_stream.read(32).hex()[::-1]
     prev_index = int.from_bytes(byte_stream.read(4), 'little')
 
+    len_script_sig = int_from_varint(byte_stream)
+    script_sig = byte_stream.read(len_script_sig).hex()
+
+    sequence = int.from_bytes(byte_stream.read(4), 'little')
+
     tx_input = TransactionInput(
         txid=prev_txid,
         vout=prev_index,
+        script_sig=script_sig,
+        sequence=sequence,
     )
     return tx_input
 
