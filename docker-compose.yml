@@ -24,7 +24,6 @@ services:
             - ./local.env
         environment:
             - CONTAINER_NAME=django
-        restart: always
         ports:
             - "8080:8080"
             - "8001:8891"
@@ -46,7 +45,6 @@ services:
             - ./local.env
         environment:
             - CONTAINER_NAME=celery
-        restart: always
         volumes:
             - ./django:/code/
         networks:
