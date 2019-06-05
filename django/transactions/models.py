@@ -42,6 +42,7 @@ import logging
 from io import BytesIO
 
 from django.db import models
+from django.db.models.fields import BigIntegerField
 
 from model_utils.models import TimeStampedModel
 
@@ -122,6 +123,8 @@ def parse_block(byte_stream, height):
         transaction.block = block
         transaction.save()
 
+    logger.debug('Done creating transactions.')
+
     return block
 
 
@@ -136,7 +139,7 @@ def parse_transaction(byte_stream):
     inputs = [parse_input(byte_stream) for _ in range(num_inputs)]
 
     num_outputs = int_from_varint(byte_stream)
-    outputs = [parse_output(byte_stream) for _ in range(num_outputs)]
+    outputs = [parse_output(byte_stream, n) for n in range(num_outputs)]
 
     locktime_bytes = byte_stream.read(4)
     locktime = int.from_bytes(locktime_bytes, 'little')
@@ -171,7 +174,7 @@ def parse_input(byte_stream):
     return tx_input
 
 
-def parse_output(byte_stream):
+def parse_output(byte_stream, n):
     value = int.from_bytes(byte_stream.read(8), 'little')
     len_script_pubkey = int_from_varint(byte_stream)
     script_pubkey = byte_stream.read(len_script_pubkey).hex()
@@ -179,14 +182,15 @@ def parse_output(byte_stream):
     tx_output = TransactionOutput(
         value=value,
         script_pubkey=script_pubkey,
+        n=n,
     )
     return tx_output
 
 
 class Transaction(TimeStampedModel):
 
-    version = models.PositiveIntegerField(help_text='only version 1 valid in Bitcoin Core')
-    locktime = models.PositiveIntegerField()
+    version = models.BigIntegerField(help_text='only version 1 valid in Bitcoin Core')
+    locktime = models.BigIntegerField()
 
     block = models.ForeignKey(
         'blocks.Block',
@@ -221,7 +225,7 @@ class TransactionInput(TimeStampedModel):
     )
 
     txid = HexField(max_length=64, help_text='transaction hash in hex (32 bytes)')
-    vout = models.PositiveIntegerField()
+    vout = models.BigIntegerField()
 
     sequence = models.BigIntegerField()
 
@@ -236,7 +240,7 @@ class TransactionOutput(TimeStampedModel):
         on_delete=models.CASCADE,
     )
 
-    value = BitcoinField()
-    n = models.PositiveIntegerField()
+    value = BigIntegerField()
+    n = models.BigIntegerField()
 
     script_pubkey = HexField(max_length=20000)
