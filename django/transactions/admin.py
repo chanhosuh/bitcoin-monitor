@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from transactions.models import CoinbaseTransaction, Transaction, TransactionInput, TransactionOutput
+from transactions.models import Transaction, TransactionInput, TransactionOutput
 
 
 class OutputInline(admin.TabularInline):

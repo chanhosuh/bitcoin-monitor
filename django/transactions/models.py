@@ -148,7 +148,8 @@ class Transaction(TimeStampedModel):
     block = models.ForeignKey(
         'blocks.Block',
         related_name='transactions',
-        on_delete=models.CASCADE,
+        on_delete=models.PROTECT,
+        null=True,
     )
 
     @property
@@ -176,13 +177,12 @@ class TransactionInput(TimeStampedModel):
         on_delete=models.CASCADE,
     )
 
-    # identify unspent transaction output
     txid = HexField(max_length=64, help_text='transaction hash in hex (32 bytes)')
     vout = models.PositiveIntegerField()
 
     sequence = models.BigIntegerField()
 
-    script_sig = HexField(max_length=200)
+    script_sig = HexField(max_length=20000)
 
 
 class TransactionOutput(TimeStampedModel):
@@ -196,4 +196,4 @@ class TransactionOutput(TimeStampedModel):
     value = BitcoinField()
     n = models.PositiveIntegerField()
 
-    script_pubkey = HexField()
+    script_pubkey = HexField(max_length=20000)

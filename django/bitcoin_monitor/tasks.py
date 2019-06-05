@@ -1,8 +1,7 @@
 import logging
 
 from blocks.models import Block
-from core.bitcoin import Bitcoin
-from transactions.models import UTXO, CoinbaseTransaction, Transaction, TransactionOutput
+from transactions.models import parse_transaction
 
 from . import celery_app
 
@@ -60,60 +59,10 @@ def process_block(self, block_data):
 
 
 @celery_app.task(bind=True, ignore_result=True, max_retries=1)
-def process_transaction(self, transaction_data, block):
+def process_transaction(self, raw_tx, block):
     """
-    :param transaction_data:
+    :param raw_tx:
     """
-    txid_ = transaction_data['txid']
-    size = transaction_data['size']
-    version = transaction_data['version']
-    locktime = transaction_data['locktime']
-    # hex_ = transaction_data['hex']
-
-    # For some reason, block hash is missing, even with verbosity=2,
-    # which according to bitcoin core docs, should have it;
-    # instead, we pass it in, since all transactions we process
-    # are coming from a block anyway.
-    # --------------------------------------
-    # block_hash = transaction_data['blockhash']
-    # block = Block.objects.get(hash=block_hash)
-
-    transaction, created = Transaction.objects.get_or_create(
-        txid=txid_,
-        size=size,
-        version=version,
-        locktime=locktime,
-        # hex=hex_,
-        block=block,
-    )
-    verb = 'Created' if created else 'Skipping'
-    logger.debug('%s transaction %s', verb, txid_)
-
-    for t_input in transaction_data['vin']:
-        if 'coinbase' in t_input:
-            CoinbaseTransaction.objects.get_or_create(
-                coinbase=t_input['coinbase'],
-                sequence=t_input['sequence'],
-            )
-            logger.debug('Created coinbase input')
-        else:
-            txid = t_input['txid']
-            vout = t_input['vout']
-            _, created = UTXO.objects.get_or_create(
-                transaction=transaction,
-                txid=txid,
-                vout=vout,
-            )
-            verb = 'Created' if created else 'Skipping'
-            logger.debug('%s input for %s', verb, txid_)
-
-    for t_output in transaction_data['vout']:
-        value = Bitcoin(t_output['value'])
-        n = t_output['n']
-        _, created = TransactionOutput.objects.get_or_create(
-            transaction=transaction,
-            value=value,
-            n=n,
-        )
-        verb = 'Created' if created else 'Skipping'
-        logger.debug('%s output for %s', verb, txid_)
+    transaction = parse_transaction(raw_tx)
+    transaction.block = block
+    transaction.save()

@@ -23,11 +23,11 @@ def _process_blockchain():
         logger.debug('Block hash: %s', block_hash)
 
         block_data = rpc_client.get_block(block_hash)
-        all_transaction_data = rpc_client.get_transactions(block_hash)
+        raw_transactions = rpc_client.get_raw_transactions(block_hash)
 
         block = process_block.si(block_data).apply().result
-        for transaction_data in all_transaction_data:
-            process_transaction.si(transaction_data, block).delay()
+        for raw_tx in raw_transactions:
+            process_transaction.si(raw_tx, block).delay()
 
 
 class Command(BaseCommand):

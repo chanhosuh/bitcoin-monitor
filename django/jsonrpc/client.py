@@ -104,10 +104,18 @@ class RpcClient:
             rpc_params=[block_hash, verbosity],
         )
 
-    def get_transactions(self, block_hash):
-        block = self.get_block(block_hash, verbosity=2)
-        transactions = block['tx']
-        return transactions
+    def get_raw_transactions(self, block_hash):
+        block = self.get_block(block_hash, verbosity=1)
+        transaction_hashes = block['tx']
+        raw_transactions = []
+        for tx_hash in transaction_hashes:
+            raw_tx = self.get_raw_transaction(tx_hash)
+            raw_transactions.append(raw_tx)
+        return raw_transactions
+
+    @decode_json_response
+    def get_raw_transaction(self, tx_hash, verbose=False):
+        return self._call_method('getrawtransaction', rpc_params=[tx_hash, verbose])
 
     def get_block_transaction_value(self, block_hash):
         raise NotImplementedError('todo')
@@ -118,3 +126,5 @@ if __name__ == '__main__':
     block_hash = client.get_best_block_hash()
     block = client.get_block(block_hash)
     print(block)
+    # raw_transactions = client.get_raw_transactions(block_hash)
+    # print(raw_transactions)
