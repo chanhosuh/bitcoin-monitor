@@ -41,6 +41,7 @@ help:
 	@echo "clean                    Remove dangling images and exited containers"
 	@echo "requirements             Generate requirements.txt from requirements_base.txt"
 	@echo "hooks                    Install Git hooks"
+	@echo "clean_logs               Truncate Docker logs"
 	@echo ""
 
 .PHONY: build
