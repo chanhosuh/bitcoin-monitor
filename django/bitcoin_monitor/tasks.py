@@ -18,7 +18,7 @@ def process_block(self, raw_block, height):
         transaction dictionaries
     """
     raw_block = bytes.fromhex(raw_block)
-    block = parse_block(raw_block, height)
+    parse_block(raw_block, height)
     # hash = block.hash()
     # verb = 'Created' if created else 'Skipping'
     # logger.debug('%s block %s', verb, hash)
