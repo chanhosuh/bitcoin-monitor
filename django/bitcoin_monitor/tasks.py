@@ -1,6 +1,6 @@
 import logging
 
-from transactions.models import parse_block
+from blocks.utils import parse_block
 
 from . import celery_app
 
