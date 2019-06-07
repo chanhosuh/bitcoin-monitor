@@ -39,152 +39,18 @@ https://bitcoin.org/en/developer-reference#raw-transaction-format
 00000000 ................................... locktime: 0 (a block height)
 """
 import logging
-from io import BytesIO
 
 from django.db import models
 from django.db.models.fields import BigIntegerField
 
 from model_utils.models import TimeStampedModel
 
-from blocks.models import Block
 from core.hash_utils import hash256
-from core.model_fields import BitcoinField, HexField
+from core.model_fields import HexField
+from core.serialization import decode_varint
 
 
 logger = logging.getLogger(__name__)
-
-
-def int_to_varint(x):
-    """
-    https://bitcoin.org/en/developer-reference#compactsize-unsigned-integers
-    """
-    if 0 <= x <= 252:
-        return x.to_bytes(1, 'little')
-    elif 253 <= x <= 0xffff:
-        return b'\xfd' + x.to_bytes(2, 'little')
-    elif 0x10000 <= x <= 0xffffffff:
-        return b'\xfe' + x.to_bytes(4, 'little')
-    elif 0x100000000 <= x <= 0xffffffffffffffff:
-        return b'\xff' + x.to_bytes(8, 'little')
-    else:
-        raise Exception()
-
-
-def int_from_varint(byte_stream):
-    if isinstance(byte_stream, bytes):
-        byte_stream = BytesIO(byte_stream)
-
-    x = byte_stream.read(1)[0]
-
-    if 0 <= x <= 252:
-        return x
-
-    if x == 253:
-        int_bytes = byte_stream.read(2)
-    elif x == 254:
-        int_bytes = byte_stream.read(4)
-    elif x == 255:
-        int_bytes = byte_stream.read(8)
-    else:
-        raise Exception()
-
-    return int.from_bytes(int_bytes, 'little')
-
-
-def parse_block(byte_stream, height):
-    if isinstance(byte_stream, bytes):
-        byte_stream = BytesIO(byte_stream)
-
-    version = int.from_bytes(byte_stream.read(4), 'little')
-    prev_hash = byte_stream.read(32).hex()[::-1]
-    merkle_root = byte_stream.read(32).hex()[::-1]
-    timestamp = int.from_bytes(byte_stream.read(4), 'little')
-    bits = byte_stream.read(4).hex()
-    nonce = byte_stream.read(4).hex()
-
-    num_transactions = int_from_varint(byte_stream)
-
-    block, created = Block.objects.get_or_create(
-        height=height,
-        version=version,
-        prev_hash=prev_hash,
-        merkle_root=merkle_root,
-        timestamp=timestamp,
-        bits=bits,
-        nonce=nonce,
-        num_transactions=num_transactions,
-    )
-    created_or_skipped = 'created' if created else 'skipped'
-    logger.debug(f'block {created_or_skipped} at height {height}')
-
-    transactions = [parse_transaction(byte_stream) for _ in range(num_transactions)]
-
-    for transaction in transactions:
-        transaction.block = block
-        transaction.save()
-
-    logger.debug('Done creating transactions.')
-
-    return block
-
-
-def parse_transaction(byte_stream):
-    if isinstance(byte_stream, bytes):
-        byte_stream = BytesIO(byte_stream)
-
-    version_bytes = byte_stream.read(4)
-    version = int.from_bytes(version_bytes, 'little')
-
-    num_inputs = int_from_varint(byte_stream)
-    inputs = [parse_input(byte_stream) for _ in range(num_inputs)]
-
-    num_outputs = int_from_varint(byte_stream)
-    outputs = [parse_output(byte_stream, n) for n in range(num_outputs)]
-
-    locktime_bytes = byte_stream.read(4)
-    locktime = int.from_bytes(locktime_bytes, 'little')
-
-    transaction = Transaction.objects.create(
-        version=version,
-        locktime=locktime,
-    )
-
-    for tx_part in inputs + outputs:
-        tx_part.transaction = transaction
-        tx_part.save()
-
-    return transaction
-
-
-def parse_input(byte_stream):
-    prev_txid = byte_stream.read(32).hex()[::-1]
-    prev_index = int.from_bytes(byte_stream.read(4), 'little')
-
-    len_script_sig = int_from_varint(byte_stream)
-    script_sig = byte_stream.read(len_script_sig).hex()
-
-    sequence = int.from_bytes(byte_stream.read(4), 'little')
-
-    tx_input = TransactionInput(
-        txid=prev_txid,
-        vout=prev_index,
-        script_sig=script_sig,
-        sequence=sequence,
-    )
-    return tx_input
-
-
-def parse_output(byte_stream, n):
-    value = int.from_bytes(byte_stream.read(8), 'little')
-    len_script_pubkey = int_from_varint(byte_stream)
-    script_pubkey = byte_stream.read(len_script_pubkey).hex()
-
-    tx_output = TransactionOutput(
-        value=value,
-        script_pubkey=script_pubkey,
-        n=n,
-    )
-    return tx_output
 
 
 class Transaction(TimeStampedModel):
@@ -206,10 +72,10 @@ class Transaction(TimeStampedModel):
     def serialize(self):
         raw_tx = b''
         raw_tx += self.version.to_bytes(4, 'little')
-        raw_tx += int_to_varint(len(self.vin))
+        raw_tx += decode_varint(len(self.vin))
         for input in self.vin:
             raw_tx += input.serialize()
-        raw_tx += int_to_varint(len(self.vout))
+        raw_tx += decode_varint(len(self.vout))
         for output in self.vout:
             raw_tx += output.serialize()
         raw_tx += self.locktime.to_bytes(4, 'little')
