@@ -3,7 +3,7 @@ from io import BytesIO
 
 from blocks.models import Block
 from core.serialization import decode_varint
-from transactions.models import parse_transaction
+from transactions.utilities import parse_transaction
 
 
 logger = logging.getLogger(__name__)
