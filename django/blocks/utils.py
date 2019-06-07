@@ -1,8 +1,7 @@
 import logging
-from io import BytesIO
 
 from blocks.models import Block
-from core.serialization import decode_varint
+from core.serialization import decode_varint, streamify_if_bytes
 from transactions.utilities import parse_transaction
 
 
@@ -10,8 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 def parse_block(byte_stream, height):
-    if isinstance(byte_stream, bytes):
-        byte_stream = BytesIO(byte_stream)
+    byte_stream = streamify_if_bytes(byte_stream)
 
     version = int.from_bytes(byte_stream.read(4), 'little')
     prev_hash = byte_stream.read(32).hex()[::-1]

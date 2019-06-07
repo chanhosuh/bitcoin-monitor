@@ -73,11 +73,17 @@ class Block(TimeStampedModel):
 
     # block version
     version = models.PositiveIntegerField()
+
     # 32 byte hash in hex
     merkle_root = HexField(max_length=64)
+
     # block time in seconds since unix epoch
     timestamp = models.PositiveIntegerField()
+
+    # target in "bits" format
     bits = HexField(max_length=8)
+
+    # used for proof-of-work
     nonce = HexField(max_length=8)
 
     num_transactions = models.PositiveIntegerField()

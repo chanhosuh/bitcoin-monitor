@@ -1,4 +1,8 @@
+import logging
 from io import BytesIO
+
+
+logger = logging.getLogger(__name__)
 
 
 class SerializationError(RuntimeError):
@@ -40,3 +44,10 @@ def decode_varint(byte_stream):
         raise Exception()
 
     return int.from_bytes(int_bytes, 'little')
+
+
+def streamify_if_bytes(byte_stream):
+    if isinstance(byte_stream, bytes):
+        byte_stream = BytesIO(byte_stream)
+
+    return byte_stream
