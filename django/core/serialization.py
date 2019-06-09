@@ -26,8 +26,7 @@ def encode_as_varint(x):
 
 
 def decode_varint(byte_stream):
-    if isinstance(byte_stream, bytes):
-        byte_stream = BytesIO(byte_stream)
+    byte_stream = streamify_if_bytes(byte_stream)
 
     x = byte_stream.read(1)[0]
 
