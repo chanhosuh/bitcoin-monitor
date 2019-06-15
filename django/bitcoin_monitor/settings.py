@@ -9,9 +9,6 @@ https://docs.djangoproject.com/en/2.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
-
-import datetime
-import logging
 import os
 import sys
 from distutils.util import strtobool
@@ -21,7 +18,10 @@ from distutils.util import strtobool
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '*p9-m^%=h20t$0$xf#s^z4p0x1lu+(de!j@^1#ba$^4t*y$^a6'
+SECRET_KEY = (
+    os.environ.get('DJANGO_SECRET_KEY') or
+    '*p9-m^%=h20t$0$xf#s^z4p0x1lu+(de!j@^1#ba$^4t*y$^a6'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = strtobool(os.environ.get('DEBUG', "False"))
@@ -33,7 +33,11 @@ if IS_TEST:
 
 TEST_RUNNER = "redgreenunittest.django.runner.RedGreenDiscoverRunner"
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', ]
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+]
+ALLOWED_HOSTS += os.environ.get('ALLOWED_HOSTS', '').split(',')
 
 # Application definition
 
@@ -88,15 +92,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'bitcoin_monitor.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/2.0/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
