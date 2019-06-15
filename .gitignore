@@ -19,3 +19,6 @@ htmlcov/
 *.log
 *.tmp
 *.swp
+
+# Env files
+prod.env
