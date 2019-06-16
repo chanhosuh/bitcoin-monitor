@@ -22,6 +22,10 @@ def _process_blockchain():
     height = last_block.height if last_block else 0
     while True:
         logger.info('height: %s', height)
+
+        if _is_throttling(height, 500):
+            continue
+
         block_hash = _retry_get_block_hash(rpc_client, height)
         logger.debug('Block hash: %s', block_hash)
 
@@ -44,6 +48,25 @@ def _retry_get_block_hash(rpc_client, height):
             time.sleep(10)
         else:
             return block_hash
+
+
+_throttling = False
+
+def _is_throttling(height, threshold):
+    global _throttling
+    last_block = Block.objects.first()
+    num_blocks_ahead = height - last_block.height
+
+    if num_blocks_ahead > threshold:
+        if not _throttling:
+            logger.info(
+                'Throttling: creating tasks too quickly compared to blocks processed.'
+            )
+            _throttling = True
+    else:
+        _throttling = False
+
+    return _throttling
 
 
 class Command(BaseCommand):
