@@ -7,6 +7,8 @@ django-celery-beat==1.1.1
 celery[redis]==4.2.1
 factory-boy==2.11.1
 
+gunicorn==19.9.0
+
 psycopg2-binary==2.7.5
 
 pandas==0.23.3
