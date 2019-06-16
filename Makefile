@@ -207,3 +207,8 @@ requirements:
 .PHONY: ps
 ps:
 	docker-compose ps
+
+.PHONY: process_blockchain
+process_blockchain:
+	docker-compose exec --detach django bash -c "manage.py process_blockchain"
+
