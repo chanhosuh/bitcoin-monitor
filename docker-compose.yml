@@ -69,6 +69,13 @@ services:
         networks:
             - bitcoin
 
+    nginx:
+        image: nginx
+        ports:
+            - "80:80"
+        networks:
+            - bitcoin
+
 volumes:
     db-data:
     bitcoin-data:
