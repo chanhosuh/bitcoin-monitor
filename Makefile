@@ -8,6 +8,8 @@ RED := \033[0;31m
 
 include ../docker-bitcoin/bitcoind/bitcoin.conf
 
+SHELL := bash
+
 .PHONY: help
 help:
 	@echo ""
@@ -41,7 +43,7 @@ help:
 	@echo "clean                    Remove dangling images and exited containers"
 	@echo "requirements             Generate requirements.txt from requirements_base.txt"
 	@echo "hooks                    Install Git hooks"
-	@echo "clean_logs               Truncate Docker logs"
+	@echo "clear_logs               Truncate Docker logs"
 	@echo ""
 
 .PHONY: build
@@ -155,8 +157,8 @@ coverage:
 	@python -m webbrowser "file:///tmp/htmlcov/index.html"
 
 # https://stackoverflow.com/a/51866793/1175053
-.PHONY: clean_logs
-clean_logs:
+.PHONY: clear_logs
+clear_logs:
 	docker run -it --rm --privileged --pid=host alpine:latest nsenter -t 1 -m -u -n -i -- sh -c 'truncate -s0 /var/lib/docker/containers/*/*-json.log'
 
 .PHONY: lint
@@ -195,6 +197,10 @@ hooks:
 
 .PHONY: requirements
 requirements:
+	@if [ -z ${VIRTUAL_ENV} ]; then \
+    	    echo "Must be in virtual environment first"; \
+    	    exit 1; \
+	fi
 	@echo "Generating requirements.txt from core dependencies in requirements_base.txt ..."
 	pip install virtualenvwrapper && \
 	source virtualenvwrapper.sh && \
