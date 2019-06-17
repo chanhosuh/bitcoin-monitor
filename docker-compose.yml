@@ -17,7 +17,9 @@ services:
         build: ./django
         command: >
             bash -c
-                "./manage.py migrate
+            "while !</dev/tcp/db/5432; do sleep 1; done;
+            ./manage.py migrate;
+            ./manage.py collectstatic;
             ./manage.py runserver 0.0.0.0:8080"
         env_file:
             - ./dev.env
