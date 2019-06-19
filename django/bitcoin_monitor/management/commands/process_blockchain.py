@@ -1,9 +1,12 @@
 import logging
 import time
 
+import redis
+
 from django.core.management.base import BaseCommand
 from django.utils import autoreload
 
+from bitcoin_monitor import settings
 from bitcoin_monitor.tasks import process_block
 from blocks.models import Block
 from jsonrpc.client import RpcClient
@@ -23,8 +26,8 @@ def _process_blockchain():
     while True:
         logger.info('height: %s', height)
 
-        if _is_throttling(height, 500):
-            continue
+        if height % 1000 == 0:
+            _wait_if_task_queue_full()
 
         block_hash = _retry_get_block_hash(rpc_client, height)
         logger.debug('Block hash: %s', block_hash)
@@ -50,7 +53,15 @@ def _retry_get_block_hash(rpc_client, height):
             return block_hash
 
 
+def _wait_if_task_queue_full(size=250):
+    r = redis.StrictRedis(settings.REDIS_HOST, settings.REDIS_PORT)
+    while r.llen('celery') > size:
+        logger.info('Waiting...')
+        time.sleep(10)
+
+
 _throttling = False
+
 
 def _is_throttling(height, threshold):
     global _throttling
