@@ -1,0 +1,84 @@
+version: '3'
+
+services:
+    bitcoind:
+        build: ../docker-bitcoin/bitcoind
+        volumes:
+            - "bitcoin-data:/data"
+        networks:
+            - bitcoin
+        stdin_open: true
+        tty: true
+        ports:
+            - "8332:8332"
+            - "8333:8333"
+
+    django:
+        build: ./django
+        command: gunicorn bitcoin_monitor.wsgi:application --bind 0.0.0.0:8080
+        env_file:
+            - ./prod.env
+        environment:
+            - CONTAINER_NAME=django
+        expose:
+            - "8080"
+        stdin_open: true
+        tty: true
+        volumes:
+            - static-files:/code/static
+            - ./django:/code/
+        networks:
+            - bitcoin
+        depends_on:
+            - db
+
+    celery:
+        build: ./django
+        user: www-data
+        command: python manage.py celery
+        env_file:
+            - ./prod.env
+        environment:
+            - CONTAINER_NAME=celery
+        volumes:
+            - ./django:/code/
+        networks:
+            - bitcoin
+        depends_on:
+            - db
+            - redis
+
+    db:
+        build: ./postgres
+        volumes:
+            - "db-data:/var/lib/postgresql/data"
+        ports:
+            - "5432:5432"
+        networks:
+            - bitcoin
+
+    redis:
+        image: redis:5-alpine
+        ports:
+            - "6379:6379"
+        networks:
+            - bitcoin
+
+    nginx:
+        build: ./nginx
+        ports:
+            - "80:80"
+        volumes:
+            - static-files:/code/static
+        networks:
+            - bitcoin
+        depends_on:
+            - django
+
+volumes:
+    db-data:
+    bitcoin-data:
+    static-files:
+
+networks:
+    bitcoin:
