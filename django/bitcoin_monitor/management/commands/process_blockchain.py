@@ -26,7 +26,7 @@ def _process_blockchain():
     while True:
         logger.info('height: %s', height)
 
-        if height % 1000 == 0:
+        if height % 100 == 0:
             _wait_if_task_queue_full()
 
         block_hash = _retry_get_block_hash(rpc_client, height)
@@ -53,11 +53,11 @@ def _retry_get_block_hash(rpc_client, height):
             return block_hash
 
 
-def _wait_if_task_queue_full(size=250):
+def _wait_if_task_queue_full(size=100):
     r = redis.StrictRedis(settings.REDIS_HOST, settings.REDIS_PORT)
     while r.llen('celery') > size:
         logger.info('Waiting...')
-        time.sleep(10)
+        time.sleep(20)
 
 
 _throttling = False
