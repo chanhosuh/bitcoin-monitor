@@ -22,3 +22,6 @@ htmlcov/
 
 # Env files
 prod.env
+
+# static files
+/django/static/*
