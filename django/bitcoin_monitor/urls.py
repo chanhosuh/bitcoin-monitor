@@ -23,7 +23,7 @@ from bitcoin_monitor import settings
 from blocks import views
 
 
-router = routers.DefaultRouter()
+router = routers.DefaultRouter() if settings.DEBUG else routers.SimpleRouter()
 router.register(r'blocks', views.BlockViewSet)
 
 urlpatterns = [
