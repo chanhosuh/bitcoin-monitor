@@ -3,6 +3,7 @@ django-debug-toolbar==1.9.1
 django-extensions==2.1.0
 django-model-utils==3.1.2
 django-polymorphic==2.0.2
+djangorestframework==3.9.4
 django-celery-beat==1.1.1
 celery[redis]==4.2.1
 factory-boy==2.11.1
