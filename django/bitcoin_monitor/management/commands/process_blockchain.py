@@ -1,10 +1,10 @@
 import logging
 import time
 
-import redis
-
 from django.core.management.base import BaseCommand
 from django.utils import autoreload
+
+import redis
 
 from bitcoin_monitor import settings
 from bitcoin_monitor.tasks import process_block
@@ -33,7 +33,7 @@ def _process_blockchain():
         logger.debug('Block hash: %s', block_hash)
 
         raw_block = rpc_client.get_block(block_hash, verbosity=0)
-        process_block.si(raw_block, height).delay()
+        process_block.si(raw_block, height).apply()
 
         height += 1
 
