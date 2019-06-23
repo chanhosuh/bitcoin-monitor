@@ -34,13 +34,16 @@ def parse_block(byte_stream, height):
     created_or_skipped = 'created' if created else 'skipped'
     logger.debug(f'block {created_or_skipped} at height {height}')
 
-    transactions = [parse_transaction(byte_stream) for _ in range(num_transactions)]
+    if created:
+        transactions = [
+            parse_transaction(byte_stream) for _ in range(num_transactions)
+        ]
 
-    for transaction in transactions:
-        transaction.block = block
+        for transaction in transactions:
+            transaction.block = block
 
-    Transaction.objects.bulk_create(transactions)
+        Transaction.objects.bulk_create(transactions)
 
-    logger.debug('Done creating transactions.')
+        logger.debug('Done creating transactions.')
 
     return block
