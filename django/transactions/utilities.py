@@ -22,16 +22,15 @@ def parse_transaction(byte_stream):
     locktime_bytes = byte_stream.read(4)
     locktime = int.from_bytes(locktime_bytes, 'little')
 
-    transaction = Transaction.objects.create(
+    transaction = Transaction(
         version=version,
         locktime=locktime,
     )
 
     for tx_part in inputs + outputs:
         tx_part.transaction = transaction
-        tx_part.save()
 
-    return transaction
+    return transaction, inputs, outputs
 
 
 def parse_input(byte_stream):
