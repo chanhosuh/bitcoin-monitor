@@ -1,6 +1,6 @@
 import logging
 
-from django.db import transaction
+from django import db
 
 from blocks.models import Block
 from core.serialization import decode_varint, streamify_if_bytes
@@ -11,7 +11,7 @@ from transactions.utilities import parse_transaction
 logger = logging.getLogger(__name__)
 
 
-@transaction.atomic
+@db.transaction.atomic
 def parse_block(byte_stream, height):
     byte_stream = streamify_if_bytes(byte_stream)
 
@@ -38,18 +38,21 @@ def parse_block(byte_stream, height):
     logger.debug(f'block {created_or_skipped} at height {height}')
 
     if created:
-        transactions = [
+        tx_parts = [
             parse_transaction(byte_stream) for _ in range(num_transactions)
         ]
+        transactions = [t[0] for t in tx_parts]
 
-        for tx, _, _ in transactions:
-            tx.block = block
+        for transaction in transactions:
+            transaction.block = block
 
-        Transaction.objects.bulk_create(transactions)
+        transactions = Transaction.objects.bulk_create(transactions)
 
-        for _, tx_ins, tx_outs in transactions:
-            TransactionInput.objects.bulk_create(tx_ins)
-            TransactionOutput.objects.bulk_create(tx_outs)
+        for transaction, inputs, outputs in tx_parts:
+            for in_or_out in inputs + outputs:
+                in_or_out.transaction = transaction
+            TransactionInput.objects.bulk_create(inputs)
+            TransactionOutput.objects.bulk_create(outputs)
 
         logger.debug('Done creating transactions.')
 

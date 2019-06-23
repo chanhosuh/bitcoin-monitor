@@ -27,9 +27,6 @@ def parse_transaction(byte_stream):
         locktime=locktime,
     )
 
-    for tx_part in inputs + outputs:
-        tx_part.transaction = transaction
-
     return transaction, inputs, outputs
 
 
