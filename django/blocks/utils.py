@@ -2,6 +2,7 @@ import logging
 
 from blocks.models import Block
 from core.serialization import decode_varint, streamify_if_bytes
+from transactions.models import Transaction
 from transactions.utilities import parse_transaction
 
 
@@ -37,7 +38,8 @@ def parse_block(byte_stream, height):
 
     for transaction in transactions:
         transaction.block = block
-        transaction.save()
+
+    Transaction.objects.bulk_create(transactions)
 
     logger.debug('Done creating transactions.')
 
