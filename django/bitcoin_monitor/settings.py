@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'bitcoin_monitor.apps.BitcoinMonitorConfig',
     'blocks.apps.BlocksConfig',
     'transactions.apps.TransactionsConfig',
+    'prices.apps.PricesConfig',
 ]
 
 MIDDLEWARE = [
