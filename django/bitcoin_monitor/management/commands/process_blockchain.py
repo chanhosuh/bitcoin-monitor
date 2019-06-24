@@ -33,7 +33,7 @@ def _process_blockchain():
         logger.debug('Block hash: %s', block_hash)
 
         raw_block = rpc_client.get_block(block_hash, verbosity=0)
-        process_block.si(raw_block, height).apply()
+        process_block.si(raw_block, height).delay()
 
         height += 1
 
