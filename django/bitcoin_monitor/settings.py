@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'debug_toolbar',
     'rest_framework',
+    'channels',
 
     # Our apps
     'bitcoin_monitor.apps.BitcoinMonitorConfig',
@@ -93,6 +94,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'bitcoin_monitor.wsgi.application'
 
+ASGI_APPLICATION = "bitcoin_monitor.routing.application"
 
 DATABASES = {
     'default': {
