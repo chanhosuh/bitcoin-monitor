@@ -4,6 +4,7 @@ ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update
 RUN apt-get install --no-install-recommends -y \
+    gcc \
     procps \
     vim-tiny \
     && \
