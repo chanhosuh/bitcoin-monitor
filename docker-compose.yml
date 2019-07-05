@@ -28,7 +28,6 @@ services:
             - CONTAINER_NAME=django
         ports:
             - "8080:8080"
-            - "8001:8891"
         stdin_open: true
         tty: true
         volumes:
@@ -60,14 +59,14 @@ services:
         volumes:
             - "db-data:/var/lib/postgresql/data"
         ports:
-            - "8002:5432"
+            - "5432:5432"
         networks:
             - bitcoin
 
     redis:
         image: redis
         ports:
-            - "6381:6379"
+            - "6379:6379"
         networks:
             - bitcoin
 
