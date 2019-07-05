@@ -2,8 +2,8 @@ FROM python:3.7.0-slim
 
 ENV PYTHONUNBUFFERED=1
 
-RUN apt-get update
-RUN apt-get install --no-install-recommends -y \
+RUN apt-get update && apt-get install --no-install-recommends -y \
+    python3-dev \
     gcc \
     procps \
     vim-tiny \
