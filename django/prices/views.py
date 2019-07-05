@@ -8,8 +8,5 @@ class TickerView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['ticker_codes'] = [
             'BTCUSD',
-            'BTCEUR',
-            'ETHUSD',
-            'ETHEUR',
         ]
         return context

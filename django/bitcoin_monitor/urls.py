@@ -16,6 +16,7 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic.base import RedirectView
 
 from rest_framework import routers
 
@@ -27,12 +28,13 @@ router = routers.DefaultRouter() if settings.DEBUG else routers.SimpleRouter()
 router.register(r'blocks', views.BlockViewSet)
 
 urlpatterns = [
+    path('', RedirectView.as_view(url='tickers/')),
     path('admin/', admin.site.urls),
-    # Wire up our API using automatic URL routing.
-    # Additionally, we include login URLs for the browsable API.
+    # websocket price feeds
+    path('tickers/', include('prices.urls')),
+    # Django REST Framework
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path('tickers/', include('prices.urls')),
 ]
 
 if settings.DEBUG:
