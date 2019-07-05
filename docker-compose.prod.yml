@@ -15,7 +15,7 @@ services:
 
     django:
         build: ./django
-        command: gunicorn bitcoin_monitor.wsgi:application --bind 0.0.0.0:8080
+        command: "gunicorn bitcoin_monitor.wsgi:application --bind 0.0.0.0:8080"
         env_file:
             - ./prod.env
         environment:
@@ -40,6 +40,25 @@ services:
             - ./prod.env
         environment:
             - CONTAINER_NAME=celery
+        volumes:
+            - ./django:/code/
+        networks:
+            - bitcoin
+        depends_on:
+            - db
+            - redis
+
+    daphne:
+        build: ./django
+        command: "daphne bitcoin_monitor.asgi:application --bind 0.0.0.0 --port 9000 --verbosity 1"
+        env_file:
+            - ./prod.env
+        environment:
+            - CONTAINER_NAME=daphne
+        expose:
+            - "9000"
+        stdin_open: true
+        tty: true
         volumes:
             - ./django:/code/
         networks:
