@@ -26,7 +26,9 @@ requests==2.20.0
 django-redis==4.10.0
 cryptocompy==0.1.1.dev1
 channels==2.2.0
+channels-redis==2.4.0
 ## The following requirements were added by pip freeze:
+aioredis==1.2.0
 amqp==2.5.0
 appnope==0.1.0
 asgiref==3.1.2
@@ -46,6 +48,7 @@ daphne==2.3.0
 decorator==4.4.0
 entrypoints==0.3
 Faker==1.0.7
+hiredis==1.0.0
 hyperlink==19.0.0
 idna==2.7
 incremental==17.5.0
@@ -55,6 +58,7 @@ jedi==0.14.0
 kombu==4.6.3
 lazy-object-proxy==1.4.1
 mccabe==0.6.1
+msgpack==0.6.1
 numpy==1.16.4
 parso==0.5.0
 pexpect==4.7.0
