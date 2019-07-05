@@ -4,7 +4,7 @@ services:
     bitcoind:
         build: ../docker-bitcoin/bitcoind
         volumes:
-            - "bitcoin-data:/data"
+            - "/mnt/blockchain/bitcoin-data:/data"
         networks:
             - bitcoin
         stdin_open: true
@@ -70,7 +70,7 @@ services:
     db:
         build: ./postgres
         volumes:
-            - "db-data:/var/lib/postgresql/data"
+            - "/mnt/postgres/db-data:/var/lib/postgresql/data"
         ports:
             - "5432:5432"
         networks:
@@ -95,8 +95,6 @@ services:
             - django
 
 volumes:
-    db-data:
-    bitcoin-data:
     static-files:
 
 networks:
