@@ -16,25 +16,29 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from django.urls import include, path
-from django.views.generic.base import RedirectView
 
 from rest_framework import routers
 
 from bitcoin_monitor import settings
+from bitcoin_monitor.views import FrontendAppView
 from blocks import views
+
+
+# from django.views.generic.base import RedirectView
 
 
 router = routers.DefaultRouter() if settings.DEBUG else routers.SimpleRouter()
 router.register(r'blocks', views.BlockViewSet)
 
 urlpatterns = [
-    path('', RedirectView.as_view(url='tickers/')),
+    # path('', RedirectView.as_view(url='tickers/')),
     path('admin/', admin.site.urls),
     # websocket price feeds
     path('tickers/', include('prices.urls')),
     # Django REST Framework
     path('', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^', FrontendAppView.as_view()),
 ]
 
 if settings.DEBUG:

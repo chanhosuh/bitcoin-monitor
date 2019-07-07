@@ -17,6 +17,8 @@ from distutils.util import strtobool
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+REACT_APP_DIR = os.path.join(BASE_DIR, 'frontend')
+
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = (
     os.environ.get('DJANGO_SECRET_KEY') or
@@ -83,10 +85,7 @@ ROOT_URLCONF = 'bitcoin_monitor.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            'templates',
-            os.path.join(BASE_DIR, 'frontend'),
-        ],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -149,7 +148,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'frontend', 'build', 'static'),
+    os.path.join(REACT_APP_DIR, 'build', 'static'),
 )
 
 # Logging setup
