@@ -20,14 +20,14 @@ services:
             "while !</dev/tcp/db/5432; do sleep 1; done;
             ./manage.py migrate;
             ./manage.py collectstatic --noinput;
-            ./manage.py runserver 0.0.0.0:8080"
+            ./manage.py runserver 0.0.0.0:8000"
         env_file:
             - ./dev.env
             - ./local.env
         environment:
             - CONTAINER_NAME=django
         ports:
-            - "8080:8080"
+            - "8000:8000"
         stdin_open: true
         tty: true
         volumes:
