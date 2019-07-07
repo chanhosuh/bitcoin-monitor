@@ -74,12 +74,19 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+if DEBUG:
+    MIDDLEWARE.append('bitcoin_monitor.middleware.dev_cors_middleware')
+
+
 ROOT_URLCONF = 'bitcoin_monitor.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['templates'],
+        'DIRS': [
+            'templates',
+            os.path.join(BASE_DIR, 'frontend'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -140,6 +147,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'frontend', 'build', 'static'),
+)
 
 # Logging setup
 DEFAULT_LOGGING_FORMAT = '[%(levelname)s][%(name)s] %(asctime)s: %(message)s'
