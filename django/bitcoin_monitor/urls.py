@@ -32,7 +32,7 @@ router.register(r'blocks', views.BlockViewSet)
 
 urlpatterns = [
     # path('', RedirectView.as_view(url='tickers/')),
-    path('admin/', admin.site.urls),
+    path('sesame/', admin.site.urls),
     # websocket price feeds
     path('tickers/', include('prices.urls')),
     # Django REST Framework
