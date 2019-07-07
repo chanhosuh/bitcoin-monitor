@@ -16,7 +16,7 @@ class Price extends React.Component {
 		// this is an "echo" websocket service
 		const hostname = window.location.hostname;
 		this.connection = new WebSocket(
-			`ws://${hostname}:8000/ws/BTC/USD`
+			`ws://${hostname}/ws/BTC/USD`
 		);
 		// listen to onmessage event
 		this.connection.onmessage = event => {
