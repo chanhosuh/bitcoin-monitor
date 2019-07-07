@@ -1,0 +1,40 @@
+/* .PriceButton {
+	background-color: green;
+	transition: background-color 0.2s linear;
+}
+
+ */
+ 
+@keyframes flashIncrease {
+  from {
+    color: mediumseagreen;
+    opacity: 1;
+  }
+  to {
+    color: inherit;
+  }
+}
+
+@keyframes flashDecrease {
+  from {
+    color: indianred;
+    opacity: 1;
+  }
+  to {
+    color: inherit;
+  }
+}
+
+.Price-display-increase {
+  animation-name: flashIncrease;
+  animation-duration: 5000ms;
+  animation-iteration-count: 1;
+  animation-timing-function: ease;
+}
+
+.Price-display-decrease {
+  animation-name: flashDecrease;
+  animation-duration: 5000ms;
+  animation-iteration-count: 1;
+  animation-timing-function: ease;
+}
