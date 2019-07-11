@@ -35,9 +35,10 @@ def parse_block(byte_stream, height):
         num_transactions=num_transactions,
     )
     created_or_skipped = 'created' if created else 'skipped'
-    logger.debug(f'block {created_or_skipped} at height {height}')
 
     if created:
+        logger.debug(f'No block in DB for height {height}, creating...')
+
         tx_parts = [
             parse_transaction(byte_stream) for _ in range(num_transactions)
         ]
@@ -55,5 +56,7 @@ def parse_block(byte_stream, height):
             TransactionOutput.objects.bulk_create(outputs)
 
         logger.debug('Done creating transactions.')
+
+    logger.info(f'block {created_or_skipped} at height {height}')
 
     return block
