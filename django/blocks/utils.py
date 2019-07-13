@@ -47,7 +47,7 @@ def parse_block(byte_stream, height):
         for transaction in transactions:
             transaction.block = block
 
-        transactions = Transaction.objects.bulk_create(transactions)
+        Transaction.objects.bulk_create(transactions)
 
         for transaction, inputs, outputs in tx_parts:
             for in_or_out in inputs + outputs:
