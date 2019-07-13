@@ -13,12 +13,11 @@ class Price extends React.Component {
 	}
 
 	componentDidMount() {
-		// this is an "echo" websocket service
 		const hostname = window.location.hostname;
 		this.connection = new WebSocket(
 			`ws://${hostname}/ws/BTC/USD`
 		);
-		// listen to onmessage event
+	
 		this.connection.onmessage = event => {
 			console.debug(event);
 			const data = JSON.parse(event.data);
@@ -35,15 +34,21 @@ class Price extends React.Component {
 	render() {
 		const ticker = this.state.ticker;
 		const price = this.state.price;
-		const classes = this.state.change >= 0 ? 'form-control Price-display-increase' : 'form-control Price-display-decrease';
+		const classes = this.state.change >= 0 ? 'panel Price-display-increase' : 'panel Price-display-decrease';
 
 		return (
-			<div className="ticker input-group">
-				<div className="input-group-prepend">
-					<button type="button" value={ticker} className="btn-info" disabled>{ticker}</button>
-				</div>
-				<input id={ticker} className={classes} value={price} key={Math.random()} placeholder="..." type="text" readOnly="readonly"/>
-			</div>
+				<div class="col-sm-8">
+					<div class="panel panel-blue">Markets
+				          <div class="row">
+				              <div class="col-md-7">
+				                 <div class="panel panel-purple">{ticker}</div>   
+				              </div>
+				              <div class="col-md-5">
+				              	<div id={ticker} className={classes} key={Math.random()}>{price}</div>
+				              </div>
+				          </div>
+				     </div>
+				 </div>
 		);
 	}
 }
