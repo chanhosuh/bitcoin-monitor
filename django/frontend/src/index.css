@@ -12,26 +12,12 @@ code {
     monospace;
 }
 
-$blue: #DDEDFF;
-$dark-blue: #0087FF;
-
-$yellow: #FEF0B2;
-$dark-yellow: #FFBD00; 
-
-$pink: #FAD2E1;
-$dark-pink: #F84F7F;
-
-$purple: #DFCCFF;
-$dark-purple: #7F51F4;
-
-@mixin color-panel($color1, $color2){
-    border: 1px solid $color2;
-    background-color: $color1;
-    color: $color2;
+body {
+  margin: 4rem 0;
 }
- 
+
 h4 {
-  margin-bottom:2rem;
+  margin-bottom: 2rem;
   margin-top: 3rem;
 }
 
@@ -39,21 +25,30 @@ h4 {
   border-radius: 0.3rem;
   padding: 1rem;
   margin-bottom: 1rem;
-  
-  &.panel-blue {
-    @include color-panel($blue, $dark-blue);
-  }
-  
-  &.panel-yellow{
-    @include color-panel($yellow, $dark-yellow);
-  }
-  
-  &.panel-pink{
-    @include color-panel($pink, $dark-pink);
-  }
-  
-  &.panel-purple {
-    @include color-panel($purple, $dark-purple);
-  }
+}
+.panel.panel-blue {
+  border: 1px solid #0087ff;
+  background-color: #ddedff;
+  color: #0087ff;
+}
+.panel.panel-yellow {
+  border: 1px solid #ffbd00;
+  background-color: #fef0b2;
+  color: #ffbd00;
+}
+.panel.panel-pink {
+  border: 1px solid #f84f7f;
+  background-color: #fad2e1;
+  color: #f84f7f;
+}
+.panel.panel-purple {
+  border: 1px solid #7f51f4;
+  background-color: #dfccff;
+  color: #7f51f4;
 }
 
+.row.row-purple {
+  border: 1px solid #7f51f4;
+  background-color: #dfccff;
+  color: #7f51f4;
+}
