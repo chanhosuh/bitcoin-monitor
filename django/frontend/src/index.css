@@ -12,9 +12,6 @@ code {
     monospace;
 }
 
-body {
-  margin: 4rem 0;
-}
 
 h4 {
   margin-bottom: 2rem;
@@ -22,14 +19,19 @@ h4 {
 }
 
 .panel {
-  border-radius: 0.3rem;
-  padding: 1rem;
-  margin-bottom: 1rem;
+  border-radius: 0.35rem;
+  padding: 0.5rem;
+  margin-bottom: 0.2rem;
 }
 .panel.panel-blue {
   border: 1px solid #0087ff;
   background-color: #ddedff;
   color: #0087ff;
+}
+.panel.panel-grey {
+  border: 1px solid #D3D3D3;
+  background-color: #F5F5F5;
+  color: #404040;
 }
 .panel.panel-yellow {
   border: 1px solid #ffbd00;

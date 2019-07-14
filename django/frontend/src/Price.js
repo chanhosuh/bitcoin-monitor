@@ -53,17 +53,17 @@ class Price extends React.Component {
 
 			rows.push(
 			  <div className="row" key={ticker}>
-				  <div className="col-md-5">
+				  <div className="col">
 					 <div className="panel">{ticker}</div>   
 				  </div>
-				  <div className="col-md-5">
-					  <div id={ticker} className={classes} key={Math.random()}>{price}</div>
+				  <div className="col">
+					  <div className={classes} key={Math.random()}>{price}</div>
 				  </div>
 			  </div>
-			)
+			);
 		}
 		return (
-				<div className="col-sm-10">
+				<div className="col">
 					<div className="panel panel-grey">Markets
 						{rows}
 					</div>
