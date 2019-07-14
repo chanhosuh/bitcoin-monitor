@@ -18,10 +18,10 @@ class Price extends React.Component {
 	}
 
 	componentDidMount() {
-		const hostname = window.location.hostname;
+		const hostname = process.env.REACT_APP_WEBSOCKET_HOST;
 		this.connections = {
-			'BTCUSD': new WebSocket(`ws://${hostname}:8000/ws/BTC/USD`),
-			'ETHUSD': new WebSocket(`ws://${hostname}:8000/ws/ETH/USD`),
+			'BTCUSD': new WebSocket(`ws://${hostname}/ws/BTC/USD`),
+			'ETHUSD': new WebSocket(`ws://${hostname}/ws/ETH/USD`),
 		};
 	
 		for (const ticker in this.connections) {
@@ -45,7 +45,10 @@ class Price extends React.Component {
 	render() {
 		var rows = [];
 		for (const ticker in this.state) {
-			const classes = this.state[ticker].change >= 0 ? 'panel Price-display-increase' : 'panel Price-display-decrease';
+			const classes = (
+				this.state[ticker].change >= 0 ?
+					'panel Price-display-increase' : 'panel Price-display-decrease'
+			);
 			const price = this.state[ticker].price;
 
 			rows.push(
@@ -61,7 +64,7 @@ class Price extends React.Component {
 		}
 		return (
 				<div className="col-sm-10">
-					<div className="panel panel-blue">Markets
+					<div className="panel panel-grey">Markets
 						{rows}
 					</div>
 				 </div>
