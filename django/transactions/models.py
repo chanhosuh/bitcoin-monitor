@@ -47,7 +47,7 @@ from model_utils.models import TimeStampedModel
 
 from core.hash_utils import hash256
 from core.model_fields import HexField
-from core.serialization import decode_varint
+from core.serialization import encode_as_varint
 
 
 logger = logging.getLogger(__name__)
@@ -72,10 +72,10 @@ class Transaction(TimeStampedModel):
     def serialize(self):
         raw_tx = b''
         raw_tx += self.version.to_bytes(4, 'little')
-        raw_tx += decode_varint(len(self.vin))
-        for input in self.vin:
-            raw_tx += input.serialize()
-        raw_tx += decode_varint(len(self.vout))
+        raw_tx += encode_as_varint(len(self.vin))
+        for input_ in self.vin:
+            raw_tx += input_.serialize()
+        raw_tx += encode_as_varint(len(self.vout))
         for output in self.vout:
             raw_tx += output.serialize()
         raw_tx += self.locktime.to_bytes(4, 'little')
@@ -97,6 +97,9 @@ class TransactionInput(TimeStampedModel):
 
     script_sig = HexField(max_length=20000)
 
+    def serialize(self):
+        pass
+
 
 class TransactionOutput(TimeStampedModel):
 
@@ -110,3 +113,6 @@ class TransactionOutput(TimeStampedModel):
     n = models.BigIntegerField()
 
     script_pubkey = HexField(max_length=20000)
+
+    def serialize(self):
+        pass
