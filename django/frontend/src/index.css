@@ -12,7 +12,6 @@ code {
     monospace;
 }
 
-
 h4 {
   margin-bottom: 2rem;
   margin-top: 3rem;
@@ -29,8 +28,8 @@ h4 {
   color: #0087ff;
 }
 .panel.panel-grey {
-  border: 1px solid #D3D3D3;
-  background-color: #F5F5F5;
+  border: 1px solid #d3d3d3;
+  background-color: #f5f5f5;
   color: #404040;
 }
 .panel.panel-yellow {
@@ -53,4 +52,8 @@ h4 {
   border: 1px solid #7f51f4;
   background-color: #dfccff;
   color: #7f51f4;
+}
+
+span.navigationSpace {
+  padding-left: 50px;
 }

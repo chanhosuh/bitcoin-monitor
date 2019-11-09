@@ -1,91 +1,86 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
+import "./App.css";
+import Block from "./Block.js";
+import Home from "./Home.js";
 
-function App() {
-  return (
-	<Router>
-		<div className="App">
-		  <header className="App-header">
-			<img src={logo} className="App-logo" alt="logo" />
-				<h1 className="App-title">Welcome to React</h1>
-			    	<MainMenu/>
-			<p>
-			  Edit <code>src/App.js</code> and save to reload.
-			</p>
-			<a
-			  className="App-link"
-			  href="https://reactjs.org"
-			  target="_blank"
-			  rel="noopener noreferrer"
-			>
-			  Learn React
-			</a>
-		  </header>
-          <div>
-			  <Route exact path="/" component={Home} />
-			  <Route exact path="/about" component={About} />
-			  <Route exact path="/code" component={Code} />
-			  <Route exact path="/contact" component={Contact} />
-			  <Route exact path="/presence" component={info} />
-          </div>
-		</div>
-    </Router>
-  );
+class App extends React.Component {
+  state = {
+    latestBlockHeight: 0,
+    // map block hash to block object
+    blocks: {}
+  };
+
+  getBlock = blockHash => this.state.blocks[blockHash];
+
+  setBlocks = blocks => {
+    this.setState({ blocks });
+  };
+
+  setHeight = blockHeight => {
+    this.setState({ latestBlockHeight: blockHeight });
+  };
+
+  async componentDidMount() {
+    fetch("/blocks/")
+      .then(response => {
+        console.log(response);
+        return response.json();
+      })
+      .then(data => {
+        console.log(data);
+        const latestBlockHeight = data.count - 1;
+        const blocks = data.results.reduce(function(map, obj) {
+          map[obj.hash] = obj;
+          return map;
+        }, {});
+        this.setHeight(latestBlockHeight);
+        this.setBlocks(blocks);
+      })
+      .catch(err => {
+        console.log("Error Reading data " + err);
+      });
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <div className="App-header">
+          <h2>Block Explorer</h2>
+        </div>
+        <div className="App-nav">
+          <Router>
+            <div>
+              <h2>
+                <Link to="/">Blocks</Link>
+                <span class="navigationSpace" />
+                <Link to="/transactions">Transactions</Link>
+              </h2>
+              <Switch>
+                <Route
+                  exact
+                  path="/"
+                  render={props => (
+                    <Home
+                      {...props}
+                      blocks={this.state.blocks}
+                      latestBlockHeight={this.state.latestBlockHeight}
+                    />
+                  )}
+                />
+                <Route
+                  path="/block/:blockHash"
+                  render={props => (
+                    <Block {...props} getBlock={this.getBlock} />
+                  )}
+                />
+              </Switch>
+            </div>
+          </Router>
+        </div>
+      </div>
+    );
+  }
 }
 
 export default App;
-
-
-const MainMenu = () => {
-	return (
-		<div>
-		  <Link to="/">
-			<button>home</button>
-		  </Link>
-		  <Link to="/about">
-			<button>About</button>
-		  </Link>
-		  <Link to="/code">
-			<button>code</button>
-		  </Link>
-		  <Link to="/code">
-			<button>contact</button>
-		  </Link>
-		  <Link to="/info">
-			<button>info</button>
-		  </Link>
-		</div>
-	);
-}
-
-const Home = () => (
-  <div>
-	Home
-  </div>
-)
-
-const About = () => (
-  <div>
-	About
-  </div>
-)
-
-const Code = () => (
-  <div>
-	Code
-  </div>
-)
-
-const Contact = () => (
-  <div>
-	Contact
-  </div>
-)
-
-const info = () => (
-  <div>
-	info
-  </div>
-)

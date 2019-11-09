@@ -8,5 +8,7 @@ class BlockViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows blocks to be viewed or edited.
     """
+
     queryset = Block.objects.all()
     serializer_class = BlockSerializer
+    lookup_field = "hash"
