@@ -18,6 +18,7 @@ class BlockSerializer(serializers.HyperlinkedModelSerializer):
             "bits",
             "nonce",
             "num_transactions",
+            'transactions',
             "hash",
             "age",
         )
