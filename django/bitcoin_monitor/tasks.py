@@ -4,7 +4,6 @@ from django.core.cache import cache
 from django.forms.models import model_to_dict
 
 from asgiref.sync import async_to_sync
-from celery import shared_task
 from channels.layers import get_channel_layer
 
 from blocks.utils import parse_block
