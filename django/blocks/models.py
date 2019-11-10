@@ -66,10 +66,10 @@ from core.model_fields import HexField
 
 class Block(TimeStampedModel):
 
-    prev_hash = HexField(max_length=64, unique=True, help_text='block hash in hex (32 bytes)')
-
     # block height (zero-indexed)
-    height = models.PositiveIntegerField()
+    height = models.PositiveIntegerField(primary_key=True, help_text='zero-index block height; primary key')
+
+    prev_hash = HexField(max_length=64, unique=True, help_text='block hash in hex (32 bytes)')
 
     # block version
     version = models.PositiveIntegerField()
