@@ -4,6 +4,9 @@ __pycache__/
 # django
 db.sqlite3
 
+# VSCode
+.vscode
+
 # Eclipse
 .project
 .pydevproject
