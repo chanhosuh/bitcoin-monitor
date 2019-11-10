@@ -28,21 +28,20 @@ from blocks import views
 
 
 router = routers.DefaultRouter() if settings.DEBUG else routers.SimpleRouter()
-router.register(r'blocks', views.BlockViewSet)
+router.register(r"blocks", views.BlockViewSet)
 
 urlpatterns = [
     # path('', RedirectView.as_view(url='tickers/')),
-    path('sesame/', admin.site.urls),
+    path("sesame/", admin.site.urls),
     # websocket price feeds
-    path('tickers/', include('prices.urls')),
+    # path('tickers/', include('prices.urls')),
     # Django REST Framework
-    path('', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^', FrontendAppView.as_view()),
+    path("", include(router.urls)),
+    path("api-auth/", include("rest_framework.urls", namespace="rest_framework")),
+    url(r"^", FrontendAppView.as_view()),
 ]
 
 if settings.DEBUG:
     import debug_toolbar
-    urlpatterns = [
-        url(r'^__debug__/', include(debug_toolbar.urls)),
-    ] + urlpatterns
+
+    urlpatterns = [url(r"^__debug__/", include(debug_toolbar.urls)),] + urlpatterns

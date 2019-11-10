@@ -22,6 +22,35 @@ class App extends React.Component {
   };
 
   async componentDidMount() {
+    this.connectWebSockets();
+    this.fetchBlocks();
+  }
+
+  connectWebSockets() {
+    const hostname = process.env.REACT_APP_WEBSOCKET_HOST;
+    this.connections = {
+      block: new WebSocket(`ws://${hostname}/ws/block`)
+    };
+
+    for (const message_type in this.connections) {
+      const conn = this.connections[message_type];
+      // eslint-disable-next-line no-loop-func
+      conn.onmessage = event => {
+        console.debug(event);
+        const data = JSON.parse(event.data);
+        if (data.block) {
+          const new_block = data.block;
+          const { blocks } = { ...this.state };
+          blocks[new_block.hash] = new_block;
+          const latestBlockHeight = new_block.height;
+          this.setState({ blocks, latestBlockHeight });
+          console.debug("State updated:", blocks);
+        }
+      };
+    }
+  }
+
+  async fetchBlocks() {
     fetch("/blocks/")
       .then(response => {
         console.log(response);
@@ -53,7 +82,7 @@ class App extends React.Component {
             <div>
               <h2>
                 <Link to="/">Blocks</Link>
-                <span class="navigationSpace" />
+                <span className="navigationSpace" />
                 <Link to="/transactions">Transactions</Link>
               </h2>
               <Switch>
