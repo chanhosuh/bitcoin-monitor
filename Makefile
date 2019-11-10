@@ -126,6 +126,14 @@ status:
 	    getblockchaininfo\
 	"
 
+.PHONY: nuke_blockchain
+nuke_blockchain:
+	@read -r -p "WARNING: this will delete all blockchain data (ctrl-c to exit / any other key to continue)." input
+	@make down
+	@docker-compose rm --force --stop -v bitcoind
+	@docker volume rm bitcoin-monitor_bitcoin-data
+	@echo "Bitcoin blockchain deleted 💣"
+
 .PHONY: nuke_db
 nuke_db:
 	@read -r -p "WARNING: this will delete all data from Postgres (ctrl-c to exit / any other key to continue)." input
