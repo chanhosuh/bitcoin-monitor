@@ -33,6 +33,8 @@ class App extends React.Component {
 
   connectWebSockets() {
     const hostname = process.env.REACT_APP_WEBSOCKET_HOST;
+    console.log(`Connecting websockets at ${hostname} ...`);
+
     this.connections = {
       block: new WebSocket(`ws://${hostname}/ws/block`)
     };
@@ -51,27 +53,30 @@ class App extends React.Component {
           blocks[new_block.hash] = new_block;
           const latestBlockHeight = new_block.height;
           this.setState({ block_list, blocks, latestBlockHeight });
-          console.debug("State updated:", blocks);
+          console.log(
+            `Block list updated: height - ${latestBlockHeight}, hash - ${new_block.hash}`
+          );
         }
       };
     }
   }
 
   async fetchBlocks() {
+    console.log("Fetching blocks ...");
     fetch("/blocks/")
       .then(response => {
-        console.log(response);
+        console.debug(response);
         return response.json();
       })
       .then(data => {
-        console.log(data);
+        console.log("Blocks retrieved:", data);
         const latestBlockHeight = data.count - 1;
         const block_list = data.results;
         this.setHeight(latestBlockHeight);
         this.setBlocks(block_list);
       })
       .catch(err => {
-        console.log("Error Reading data " + err);
+        console.error("Error Reading data " + err);
       });
   }
 

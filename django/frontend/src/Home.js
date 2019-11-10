@@ -7,7 +7,7 @@ class Home extends Component {
   render() {
     var tableRows = [];
     _.each(this.props.block_list, (value, index) => {
-      console.log(value, index);
+      console.debug(`index: ${index}, block:`, value);
       /*
       age: "10 years, 9 months ago"
       bits: "ffff001d"
