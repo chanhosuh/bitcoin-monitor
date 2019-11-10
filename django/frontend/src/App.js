@@ -8,13 +8,18 @@ class App extends React.Component {
   state = {
     latestBlockHeight: 0,
     // map block hash to block object
-    blocks: {}
+    blocks: {},
+    block_list: []
   };
 
   getBlock = blockHash => this.state.blocks[blockHash];
 
-  setBlocks = blocks => {
-    this.setState({ blocks });
+  setBlocks = block_list => {
+    const blocks = block_list.reduce(function(map, obj) {
+      map[obj.hash] = obj;
+      return map;
+    }, {});
+    this.setState({ blocks, block_list });
   };
 
   setHeight = blockHeight => {
@@ -40,10 +45,12 @@ class App extends React.Component {
         const data = JSON.parse(event.data);
         if (data.block) {
           const new_block = data.block;
-          const { blocks } = { ...this.state };
+          let { block_list, blocks } = { ...this.state };
+          if (block_list) block_list.pop();
+          block_list = [new_block, ...block_list];
           blocks[new_block.hash] = new_block;
           const latestBlockHeight = new_block.height;
-          this.setState({ blocks, latestBlockHeight });
+          this.setState({ block_list, blocks, latestBlockHeight });
           console.debug("State updated:", blocks);
         }
       };
@@ -59,12 +66,9 @@ class App extends React.Component {
       .then(data => {
         console.log(data);
         const latestBlockHeight = data.count - 1;
-        const blocks = data.results.reduce(function(map, obj) {
-          map[obj.hash] = obj;
-          return map;
-        }, {});
+        const block_list = data.results;
         this.setHeight(latestBlockHeight);
-        this.setBlocks(blocks);
+        this.setBlocks(block_list);
       })
       .catch(err => {
         console.log("Error Reading data " + err);
@@ -92,7 +96,7 @@ class App extends React.Component {
                   render={props => (
                     <Home
                       {...props}
-                      blocks={this.state.blocks}
+                      block_list={this.state.block_list}
                       latestBlockHeight={this.state.latestBlockHeight}
                     />
                   )}

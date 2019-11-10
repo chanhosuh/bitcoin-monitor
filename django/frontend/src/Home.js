@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 class Home extends Component {
   render() {
     var tableRows = [];
-    _.each(this.props.blocks, (value, index) => {
+    _.each(this.props.block_list, (value, index) => {
       console.log(value, index);
       /*
       age: "10 years, 9 months ago"
