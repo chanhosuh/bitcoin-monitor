@@ -72,11 +72,11 @@ class Transaction(TimeStampedModel):
     def serialize(self):
         raw_tx = b''
         raw_tx += self.version.to_bytes(4, 'little')
-        raw_tx += encode_as_varint(len(self.vin))
-        for input_ in self.vin:
+        raw_tx += encode_as_varint(len(self.vin.all()))
+        for input_ in self.vin.all():
             raw_tx += input_.serialize()
-        raw_tx += encode_as_varint(len(self.vout))
-        for output in self.vout:
+        raw_tx += encode_as_varint(len(self.vout.all()))
+        for output in self.vout.all():
             raw_tx += output.serialize()
         raw_tx += self.locktime.to_bytes(4, 'little')
         return raw_tx
@@ -98,7 +98,13 @@ class TransactionInput(TimeStampedModel):
     script_sig = HexField(max_length=20000)
 
     def serialize(self):
-        pass
+        raw_tx = b''
+        raw_tx += bytes.fromhex(self.txid)
+        raw_tx += self.vout.to_bytes(4, 'little')
+        script_sig_as_bytes = bytes.fromhex(self.script_sig)
+        raw_tx += encode_as_varint(len(script_sig_as_bytes))
+        raw_tx += script_sig_as_bytes
+        return raw_tx
 
 
 class TransactionOutput(TimeStampedModel):
@@ -114,5 +120,13 @@ class TransactionOutput(TimeStampedModel):
 
     script_pubkey = HexField(max_length=20000)
 
+    class Meta:
+        ordering = ['n', ]
+
     def serialize(self):
-        pass
+        raw_tx = b''
+        raw_tx += self.value.to_bytes(8, 'little')
+        script_pubkey_as_bytes = bytes.fromhex(self.script_pubkey)
+        raw_tx += encode_as_varint(len(script_pubkey_as_bytes))
+        raw_tx += script_pubkey_as_bytes
+        return raw_tx
