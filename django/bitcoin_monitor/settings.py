@@ -10,9 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 import os
-import requests
 import sys
 from distutils.util import strtobool
+
+import requests
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -44,11 +46,13 @@ ALLOWED_HOSTS += os.environ.get('ALLOWED_HOSTS', '').split(',')
 # On AWS, add IP of the EC2 housing the Django container,
 # so it can pass its healthcheck:
 # https://stackoverflow.com/a/33527496/1175053
-try:
-    EC2_IP = requests.get('http://169.254.169.254/latest/meta-data/local-ipv4').text
-    ALLOWED_HOSTS.append(EC2_IP)
-except requests.exceptions.RequestException:
-    pass
+#
+# try:
+#     EC2_IP = requests.get('http://169.254.169.254/latest/meta-data/local-ipv4').text
+#     ALLOWED_HOSTS.append(EC2_IP)
+# except requests.exceptions.RequestException:
+#     pass
+
 
 # Application definition
 
