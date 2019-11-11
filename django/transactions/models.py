@@ -55,6 +55,8 @@ logger = logging.getLogger(__name__)
 
 class Transaction(TimeStampedModel):
 
+    txid = HexField(primary_key=True, max_length=64)
+
     version = models.BigIntegerField(help_text='only version 1 valid in Bitcoin Core')
     locktime = models.BigIntegerField()
 
@@ -65,9 +67,15 @@ class Transaction(TimeStampedModel):
         null=True,
     )
 
-    @property
-    def txid(self):
-        return hash256(self.serialize())
+    def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
+        self.txid = self._txid()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.txid
+
+    def _txid(self):
+        return hash256(self.serialize()).hex()
 
     def serialize(self):
         raw_tx = b''

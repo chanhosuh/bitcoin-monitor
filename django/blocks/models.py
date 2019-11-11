@@ -66,10 +66,12 @@ from core.model_fields import HexField
 
 class Block(TimeStampedModel):
 
-    # block height (zero-indexed)
-    height = models.PositiveIntegerField(primary_key=True, help_text='zero-index block height; primary key')
+    hash = HexField(primary_key=True, max_length=64)
 
-    prev_hash = HexField(max_length=64, unique=True, help_text='block hash in hex (32 bytes)')
+    # block height (zero-indexed)
+    height = models.PositiveIntegerField(help_text='zero-index block height')
+
+    prev_hash = HexField(max_length=64, help_text='block hash in hex (32 bytes)')
 
     # block version
     version = models.PositiveIntegerField()
@@ -91,14 +93,17 @@ class Block(TimeStampedModel):
     class Meta:
         ordering = ('-height', )
 
+    def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
+        self.hash = self._hash()
+        super().save(*args, **kwargs)
+
     def __repr__(self):
         return f'<Block height={self.height}, hash={self.hash}>'
 
     def __str__(self):
         return self.hash
 
-    @property
-    def hash(self):
+    def _hash(self):
         return hash256(self.raw_header).hex()[::-1]
 
     @property
