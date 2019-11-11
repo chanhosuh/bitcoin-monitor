@@ -37,6 +37,7 @@ help:
 	@echo ""
 	@echo "DATA:"
 	@echo "nuke_db                  Delete Postgres data"
+	@echo "nuke_blockchain          Delete blockchain data"
 	@echo "clear_redis              Delete all the keys in Redis"
 	@echo ""
 	@echo "MAINTENANCE:"
@@ -44,6 +45,9 @@ help:
 	@echo "requirements             Generate requirements.txt from requirements_base.txt"
 	@echo "hooks                    Install Git hooks"
 	@echo "clear_logs               Truncate Docker logs"
+	@echo ""
+	@echo "APPLICATION:"
+	@echo "process_blockchain       Run 'process_blockchain' Django management command"
 	@echo ""
 
 .PHONY: build
