@@ -59,3 +59,4 @@ Then visit `localhost:80` in your browser.
 ## References
 * [Mastering Bitcoin, chapter 3](https://github.com/bitcoinbook/bitcoinbook/blob/develop/ch03.asciidoc): intro to `bitcoind`
 * [ChainQuery](http://chainquery.com/bitcoin-api): useful web interface to learn about `bitcoin-cli`
+* [Programming Bitcoin](https://github.com/jimmysong/programmingbitcoin): details with working python code for block and transaction serialization
