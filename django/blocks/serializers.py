@@ -10,7 +10,6 @@ class BlockSerializer(serializers.HyperlinkedModelSerializer):
         many=True,
         read_only=True,
         view_name='transaction-detail',
-        lookup_field='txid',
     )
 
     class Meta:
