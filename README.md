@@ -1,5 +1,9 @@
 # bitcoin-monitor
-Monitor and persist Bitcoin on-chain data to Postgres.
+Bitcoin block explorer, using Django to persist blocks from the bitcoin node (`bitcoind`) into Postgres, and displaying through a React frontend.
+
+Celery is used for the persist tasks and Channels is used to notify the frontend of new blocks.  Redis is used as the persistence store for both.
+
+Docker is used to encapsulate the separate pieces.  Nginx is used for the production setup (see `docker-compose.prod.yml`) and omitted for the dev setup (`docker-compose.yml`).
 
 ## Quickstart guide
 - install Docker: [Mac](https://www.docker.com/docker-mac) | [Ubuntu](https://www.docker.com/docker-ubuntu)
