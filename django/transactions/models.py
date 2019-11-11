@@ -55,7 +55,7 @@ logger = logging.getLogger(__name__)
 
 class Transaction(TimeStampedModel):
 
-    txid = HexField(primary_key=True, max_length=64)
+    txid = HexField(max_length=64)
 
     version = models.BigIntegerField(help_text='only version 1 valid in Bitcoin Core')
     locktime = models.BigIntegerField()

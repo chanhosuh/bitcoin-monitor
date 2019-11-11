@@ -46,6 +46,7 @@ def parse_block(byte_stream, height):
 
         for transaction in transactions:
             transaction.block = block
+            transaction.txid = transaction._txid()
 
         Transaction.objects.bulk_create(transactions)
 
