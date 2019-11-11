@@ -11,9 +11,9 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     pip install --upgrade pip && \
     rm -rf /var/lib/apt/lists/*
 
-COPY . /code
 WORKDIR /code
-
+COPY requirements.txt .
 RUN pip install -r requirements.txt
+COPY . .
 
 ENV PATH /code:$PATH
