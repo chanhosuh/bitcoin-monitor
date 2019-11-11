@@ -12,9 +12,6 @@ class BlockViewSet(viewsets.ModelViewSet):
     queryset = Block.objects.all()
     serializer_class = BlockSerializer
 
-    # use hash instead of pk/id
-    lookup_field = "hash"
-
     # enable case-insensitive partial match
     filter_backends = [filters.SearchFilter]
     search_fields = ['height', ]

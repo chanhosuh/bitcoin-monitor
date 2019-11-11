@@ -21,14 +21,18 @@ from rest_framework import routers
 
 from bitcoin_monitor import settings
 from bitcoin_monitor.views import FrontendAppView
-from blocks import views
+from blocks.views import BlockViewSet
+from transactions.views import TransactionInputViewSet, TransactionOutputViewSet, TransactionViewSet
 
 
 # from django.views.generic.base import RedirectView
 
 
 router = routers.DefaultRouter() if settings.DEBUG else routers.SimpleRouter()
-router.register(r"blocks", views.BlockViewSet)
+router.register(r"blocks", BlockViewSet)
+router.register(r"transactions", TransactionViewSet)
+router.register(r"transactioninputs", TransactionInputViewSet)
+router.register(r"transactionoutputs", TransactionOutputViewSet)
 
 urlpatterns = [
     # path('', RedirectView.as_view(url='tickers/')),
