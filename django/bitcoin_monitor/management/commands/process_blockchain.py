@@ -87,4 +87,4 @@ class Command(BaseCommand):
     """
     def handle(self, *args, **options):
         logger.info('Autoreloading process_blockchain...')
-        autoreload.main(_process_blockchain)
+        autoreload.run_with_reloader(_process_blockchain)

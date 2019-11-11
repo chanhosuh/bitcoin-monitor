@@ -46,7 +46,6 @@ def parse_block(byte_stream, height):
 
         for transaction in transactions:
             transaction.block = block
-            transaction.txid = transaction._txid()
 
         Transaction.objects.bulk_create(transactions)
 
@@ -55,6 +54,13 @@ def parse_block(byte_stream, height):
                 in_or_out.transaction = transaction
             TransactionInput.objects.bulk_create(inputs)
             TransactionOutput.objects.bulk_create(outputs)
+
+        for transaction in transactions:
+            # create txid (transaction hash) after the
+            # related names, vin and vout, are attached
+            transaction.txid = transaction._txid()
+
+        Transaction.objects.bulk_update(transactions, ['txid'])
 
         logger.debug('Done creating transactions.')
 

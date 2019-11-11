@@ -27,4 +27,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         logger.info('Autoreloading celery worker ...')
-        autoreload.main(restart_celery)
+        autoreload.run_with_reloader(restart_celery)
