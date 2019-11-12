@@ -15,6 +15,7 @@ psycopg2-binary==2.7.5
 pandas==0.23.3
 pytz==2018.5
 
+black==19.10b0
 flake8==3.7.6
 astroid==2.1.0
 pylint==2.2.2
