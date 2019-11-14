@@ -1,15 +1,22 @@
-import React from "react";
+import React, { Fragment, PureComponent } from "react";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import "./App.css";
 import Block from "./Block.js";
 import Home from "./Home.js";
 
-class App extends React.Component {
+import ExampleWrapper from "./ExampleWrapper";
+
+class App extends PureComponent {
   state = {
-    latestBlockHeight: 0,
+    latestBlockHeight: -1,
     // map block hash to block object
     blocks: {},
-    block_list: []
+    block_list: [],
+
+    // list paging
+    currentPage: 1,
+    hasNextPage: false,
+    isNextPageLoading: false
   };
 
   getBlock = blockHash => this.state.blocks[blockHash];
@@ -26,9 +33,15 @@ class App extends React.Component {
     this.setState({ latestBlockHeight: blockHeight });
   };
 
-  async componentDidMount() {
+  componentDidMount() {
+    this.fetchInitialBlocks();
     this.connectWebSockets();
-    this.fetchBlocks();
+  }
+
+  componentDidUpdate() {
+    this.setState(state => ({
+      hasNextPage: state.block_list.length < state.latestBlockHeight + 1
+    }));
   }
 
   connectWebSockets() {
@@ -61,8 +74,8 @@ class App extends React.Component {
     }
   }
 
-  async fetchBlocks() {
-    console.log("Fetching blocks ...");
+  fetchInitialBlocks = () => {
+    console.log("Fetching initial blocks ...");
     fetch("/blocks/")
       .then(response => {
         console.debug(response);
@@ -70,17 +83,62 @@ class App extends React.Component {
       })
       .then(data => {
         console.log("Blocks retrieved:", data);
-        const latestBlockHeight = data.count - 1;
-        const block_list = data.results;
-        this.setHeight(latestBlockHeight);
-        this.setBlocks(block_list);
+        if (data.count > 0) {
+          const latestBlockHeight = data.count - 1;
+          const block_list = data.results;
+          this.setHeight(latestBlockHeight);
+          this.setBlocks(block_list);
+        }
       })
       .catch(err => {
         console.error("Error Reading data " + err);
       });
-  }
+  };
+
+  fetchBlocks = pageNumber => {
+    console.log(`Fetching blocks for page ${pageNumber} ...`);
+    fetch(`/blocks/?page=${pageNumber}`)
+      .then(response => {
+        console.debug(response);
+        return response.json();
+      })
+      .then(data => {
+        console.log("Blocks retrieved:", data);
+        const block_list = [...this.state.block_list].concat(data.results);
+        this.setBlocks(block_list);
+
+        this.setState(state => ({
+          hasNextPage: state.block_list.length < state.latestBlockHeight + 1,
+          isNextPageLoading: false
+        }));
+
+        this.setState({ currentPage: pageNumber });
+
+        console.log(this.state);
+      })
+      .catch(err => {
+        console.error("Error Reading data " + err);
+      });
+  };
+
+  _loadNextPage = (...args) => {
+    console.log("loadNextPage:", ...args);
+    this.setState({ isNextPageLoading: true });
+    const currentPage = this.state.currentPage + 1;
+    this.fetchBlocks(currentPage);
+  };
 
   render() {
+    const {
+      hasNextPage,
+      isNextPageLoading,
+      block_list,
+      latestBlockHeight
+    } = this.state;
+    console.log(
+      `Rendering... next page: ${hasNextPage}, loading: ${isNextPageLoading}, length: ${block_list.length}`
+    );
+
     return (
       <div className="App">
         <div className="App-header">
@@ -99,10 +157,17 @@ class App extends React.Component {
                   exact
                   path="/"
                   render={props => (
-                    <Home
-                      {...props}
-                      block_list={this.state.block_list}
-                      latestBlockHeight={this.state.latestBlockHeight}
+                    // <Home
+                    //   {...props}
+                    //   block_list={this.state.block_list}
+                    //   latestBlockHeight={this.state.latestBlockHeight}
+                    // />
+                    <ExampleWrapper
+                      hasNextPage={hasNextPage}
+                      isNextPageLoading={isNextPageLoading}
+                      items={block_list}
+                      loadNextPage={this._loadNextPage}
+                      latestBlockHeight={latestBlockHeight}
                     />
                   )}
                 />
