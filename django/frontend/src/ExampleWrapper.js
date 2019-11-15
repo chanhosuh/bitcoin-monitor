@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 import { FixedSizeList as List } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
+import AutoSizer from "react-virtualized-auto-sizer";
 
 import { Link } from "react-router-dom";
 
@@ -56,17 +57,21 @@ const ExampleWrapper = ({
         loadMoreItems={loadMoreItems}
       >
         {({ onItemsRendered, ref }) => (
-          <List
-            className="List"
-            height={750}
-            itemCount={itemCount}
-            itemSize={30}
-            onItemsRendered={onItemsRendered}
-            ref={ref}
-            width={1500}
-          >
-            {Item}
-          </List>
+          <AutoSizer>
+            {({ height, width }) => (
+              <List
+                className="List"
+                height={height}
+                itemCount={itemCount}
+                itemSize={30}
+                onItemsRendered={onItemsRendered}
+                ref={ref}
+                width={width}
+              >
+                {Item}
+              </List>
+            )}
+          </AutoSizer>
         )}
       </InfiniteLoader>
     </Fragment>
