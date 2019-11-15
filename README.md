@@ -56,6 +56,14 @@ For prod setup, you should build the static files first:
 
 Then visit `localhost:80` in your browser.
 
+### Quick end?
+
+If you're playing around with this, you will probably want to cleanup at some point; the full Bitcoin blockchain is nearing 300GB currently and the postgres db can get even larger.
+
+After `make down`, `make clear_redis; make nuke_db; make nuke_blockchain; make clean` will take care of cleaning out data and extraneous docker thingies.  
+
+If you really want to trash everything, don't forget to use `docker image ls`, `docker rmi`, etc. to identify and remove the images.
+
 ## References
 * [Mastering Bitcoin, chapter 3](https://github.com/bitcoinbook/bitcoinbook/blob/develop/ch03.asciidoc): intro to `bitcoind`
 * [ChainQuery](http://chainquery.com/bitcoin-api): useful web interface to learn about `bitcoin-cli`
