@@ -159,7 +159,7 @@ class App extends PureComponent {
                       isNextPageLoading={isNextPageLoading}
                       items={blockList}
                       loadNextPage={this._loadNextPage}
-                      {...props}
+                      latestBlockHeight={this.state.latestBlockHeight}
                     />
                   )}
                 />

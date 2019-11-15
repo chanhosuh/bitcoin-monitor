@@ -51,14 +51,14 @@ const ExampleWrapper = ({
   return (
     <Fragment>
       <h2> Current Block: {latestBlockHeight} </h2>
+      <AutoSizer>
+        {({ height, width }) => (
       <InfiniteLoader
         isItemLoaded={isItemLoaded}
         itemCount={itemCount}
         loadMoreItems={loadMoreItems}
       >
         {({ onItemsRendered, ref }) => (
-          <AutoSizer>
-            {({ height, width }) => (
               <List
                 className="List"
                 height={height}
@@ -71,9 +71,9 @@ const ExampleWrapper = ({
                 {Item}
               </List>
             )}
-          </AutoSizer>
+          </InfiniteLoader>
         )}
-      </InfiniteLoader>
+          </AutoSizer>
     </Fragment>
   );
 };
