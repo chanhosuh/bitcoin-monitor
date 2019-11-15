@@ -1,32 +1,38 @@
-import React, { Fragment, PureComponent } from "react";
+import React, { PureComponent } from "react";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import "./App.css";
 import Block from "./Block.js";
-import Home from "./Home.js";
-
 import ExampleWrapper from "./ExampleWrapper";
+
+const PAGE_LENGTH = 50;
 
 class App extends PureComponent {
   state = {
     latestBlockHeight: -1,
     // map block hash to block object
     blocks: {},
-    block_list: [],
+    blockList: [],
 
     // list paging
-    currentPage: 1,
+    currentPage: 0,
     hasNextPage: false,
     isNextPageLoading: false
   };
 
   getBlock = blockHash => this.state.blocks[blockHash];
 
-  setBlocks = block_list => {
-    const blocks = block_list.reduce(function(map, obj) {
+  setBlocks = newBlocks => {
+    const blockList = [...this.state.blockList];
+    for (const block of newBlocks) {
+      if (!(block.hash in this.state.blocks)) {
+        blockList.push(block);
+      }
+    }
+    const blocks = blockList.reduce(function(map, obj) {
       map[obj.hash] = obj;
       return map;
     }, {});
-    this.setState({ blocks, block_list });
+    this.setState({ blocks, blockList });
   };
 
   setHeight = blockHeight => {
@@ -39,9 +45,11 @@ class App extends PureComponent {
   }
 
   componentDidUpdate() {
-    this.setState(state => ({
-      hasNextPage: state.block_list.length < state.latestBlockHeight + 1
-    }));
+    const state = this.state;
+    this.setState({
+      hasNextPage: state.blockList.length < state.latestBlockHeight + 1,
+      currentPage: Math.ceil(state.blockList.length / PAGE_LENGTH)
+    });
   }
 
   connectWebSockets() {
@@ -60,12 +68,12 @@ class App extends PureComponent {
         const data = JSON.parse(event.data);
         if (data.block) {
           const new_block = data.block;
-          let { block_list, blocks } = { ...this.state };
-          if (block_list) block_list.pop();
-          block_list = [new_block, ...block_list];
+          let { blockList, blocks } = { ...this.state };
+          blockList = [new_block, ...blockList];
+          blocks = { ...blocks };
           blocks[new_block.hash] = new_block;
           const latestBlockHeight = new_block.height;
-          this.setState({ block_list, blocks, latestBlockHeight });
+          this.setState({ blockList, blocks, latestBlockHeight });
           console.log(
             `Block list updated: height - ${latestBlockHeight}, hash - ${new_block.hash}`
           );
@@ -85,9 +93,8 @@ class App extends PureComponent {
         console.log("Blocks retrieved:", data);
         if (data.count > 0) {
           const latestBlockHeight = data.count - 1;
-          const block_list = data.results;
           this.setHeight(latestBlockHeight);
-          this.setBlocks(block_list);
+          this.setBlocks(data.results);
         }
       })
       .catch(err => {
@@ -104,16 +111,8 @@ class App extends PureComponent {
       })
       .then(data => {
         console.log("Blocks retrieved:", data);
-        const block_list = [...this.state.block_list].concat(data.results);
-        this.setBlocks(block_list);
-
-        this.setState(state => ({
-          hasNextPage: state.block_list.length < state.latestBlockHeight + 1,
-          isNextPageLoading: false
-        }));
-
-        this.setState({ currentPage: pageNumber });
-
+        this.setBlocks(data.results);
+        this.setState({ isNextPageLoading: false });
         console.log(this.state);
       })
       .catch(err => {
@@ -124,19 +123,17 @@ class App extends PureComponent {
   _loadNextPage = (...args) => {
     console.log("loadNextPage:", ...args);
     this.setState({ isNextPageLoading: true });
-    const currentPage = this.state.currentPage + 1;
-    this.fetchBlocks(currentPage);
+    if (this.state.blockList.length % PAGE_LENGTH === 0) {
+      this.fetchBlocks(this.state.currentPage + 1);
+    } else {
+      this.fetchBlocks(this.state.currentPage);
+    }
   };
 
   render() {
-    const {
-      hasNextPage,
-      isNextPageLoading,
-      block_list,
-      latestBlockHeight
-    } = this.state;
+    const { hasNextPage, isNextPageLoading, blockList } = this.state;
     console.log(
-      `Rendering... next page: ${hasNextPage}, loading: ${isNextPageLoading}, length: ${block_list.length}`
+      `Rendering... next page: ${hasNextPage}, loading: ${isNextPageLoading}, length: ${blockList.length}`
     );
 
     return (
@@ -157,17 +154,12 @@ class App extends PureComponent {
                   exact
                   path="/"
                   render={props => (
-                    // <Home
-                    //   {...props}
-                    //   block_list={this.state.block_list}
-                    //   latestBlockHeight={this.state.latestBlockHeight}
-                    // />
                     <ExampleWrapper
                       hasNextPage={hasNextPage}
                       isNextPageLoading={isNextPageLoading}
-                      items={block_list}
+                      items={blockList}
                       loadNextPage={this._loadNextPage}
-                      latestBlockHeight={latestBlockHeight}
+                      {...props}
                     />
                   )}
                 />
