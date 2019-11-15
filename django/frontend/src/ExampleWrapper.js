@@ -2,8 +2,8 @@ import React, { Fragment } from "react";
 import { FixedSizeList as List } from "react-window";
 import InfiniteLoader from "react-window-infinite-loader";
 import AutoSizer from "react-virtualized-auto-sizer";
-
 import { Link } from "react-router-dom";
+import "./ExampleWrapper.css";
 
 const ExampleWrapper = ({
   // Are there more items to load?
@@ -40,9 +40,13 @@ const ExampleWrapper = ({
       const { height, hash, age } = items[index];
       return (
         <div style={style}>
-          {height}
-          <Link to={`/block/${hash}`}>{hash}</Link>
-          {age}
+          <div className="row">
+            <span className="rowelem">{height}</span>
+            <span className="rowelem">
+              <Link to={`/block/${hash}`}>{hash}</Link>
+            </span>
+            <span className="rowelem">{age}</span>
+          </div>
         </div>
       );
     }
@@ -53,12 +57,12 @@ const ExampleWrapper = ({
       <h2> Current Block: {latestBlockHeight} </h2>
       <AutoSizer>
         {({ height, width }) => (
-      <InfiniteLoader
-        isItemLoaded={isItemLoaded}
-        itemCount={itemCount}
-        loadMoreItems={loadMoreItems}
-      >
-        {({ onItemsRendered, ref }) => (
+          <InfiniteLoader
+            isItemLoaded={isItemLoaded}
+            itemCount={itemCount}
+            loadMoreItems={loadMoreItems}
+          >
+            {({ onItemsRendered, ref }) => (
               <List
                 className="List"
                 height={height}
@@ -73,7 +77,7 @@ const ExampleWrapper = ({
             )}
           </InfiniteLoader>
         )}
-          </AutoSizer>
+      </AutoSizer>
     </Fragment>
   );
 };

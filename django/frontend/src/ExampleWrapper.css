@@ -1,0 +1,30 @@
+span.rowelem {
+  display: inline-block;
+  /* width: 100px; */
+  /* height: 100px; */
+  padding: 5px;
+  /* border: 1px solid blue;     */
+  /* background-color: yellow;  */
+}
+
+span.row {
+  display: block;
+  width: 100px;
+  height: 100px;
+  padding: 5px;
+  border: 1px solid blue;
+  background-color: yellow;
+}
+
+body {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border-bottom: 1px solid #eee;
+  box-sizing: border-box;
+}
