@@ -49,8 +49,8 @@ cryptography==2.8
 daphne==2.3.0
 decorator==4.4.1
 entrypoints==0.3
-Faker==2.0.3
-hiredis==1.0.0
+Faker==2.0.4
+hiredis==1.0.1
 hyperlink==19.0.0
 idna==2.7
 importlib-metadata==0.23
