@@ -4,6 +4,9 @@ import "./App.css";
 import Block from "./Block.js";
 import ExampleWrapper from "./ExampleWrapper";
 
+// for testing
+// import testBlockData from "./test_data/blocks.json";
+
 const PAGE_LENGTH = 50;
 
 class App extends PureComponent {
@@ -42,6 +45,8 @@ class App extends PureComponent {
   componentDidMount() {
     this.fetchInitialBlocks();
     this.connectWebSockets();
+    // for testing
+    // this.setBlocks(testBlockData);
   }
 
   componentDidUpdate() {
@@ -87,6 +92,9 @@ class App extends PureComponent {
     fetch("/blocks/")
       .then(response => {
         console.debug(response);
+        if (!response.ok) {
+          throw new Error("HTTP status " + response.status);
+        }
         return response.json();
       })
       .then(data => {
@@ -95,10 +103,12 @@ class App extends PureComponent {
           const latestBlockHeight = data.count - 1;
           this.setHeight(latestBlockHeight);
           this.setBlocks(data.results);
+          // const jsonData = JSON.stringify(data.results);
+          // console.log(jsonData);
         }
       })
       .catch(err => {
-        console.error("Error Reading data " + err);
+        console.error("fetchInitialBlocks: " + err);
       });
   };
 
@@ -107,16 +117,19 @@ class App extends PureComponent {
     fetch(`/blocks/?page=${pageNumber}`)
       .then(response => {
         console.debug(response);
+        if (!response.ok) {
+          throw new Error("HTTP status " + response.status);
+        }
         return response.json();
       })
       .then(data => {
         console.log("Blocks retrieved:", data);
         this.setBlocks(data.results);
         this.setState({ isNextPageLoading: false });
-        console.log(this.state);
+        console.log("Current state: ", this.state);
       })
       .catch(err => {
-        console.error("Error Reading data " + err);
+        console.error("fetchBlocks: " + err);
       });
   };
 
@@ -138,41 +151,32 @@ class App extends PureComponent {
 
     return (
       <div className="App">
-        <div className="App-header">
-          <h2>Block Explorer</h2>
-        </div>
-        <div className="App-nav">
-          <Router>
-            <div>
-              <h2>
-                <Link to="/">Blocks</Link>
-                <span className="navigationSpace" />
-                <Link to="/transactions">Transactions</Link>
-              </h2>
-              <Switch>
-                <Route
-                  exact
-                  path="/"
-                  render={props => (
-                    <ExampleWrapper
-                      hasNextPage={hasNextPage}
-                      isNextPageLoading={isNextPageLoading}
-                      items={blockList}
-                      loadNextPage={this._loadNextPage}
-                      latestBlockHeight={this.state.latestBlockHeight}
-                    />
-                  )}
+        <Router>
+          <h2>
+            <Link to="/">Blocks</Link>
+            <span className="navigationSpace" />
+            <Link to="/transactions">Transactions</Link>
+          </h2>
+          <Switch>
+            <Route
+              exact
+              path="/"
+              render={props => (
+                <ExampleWrapper
+                  hasNextPage={hasNextPage}
+                  isNextPageLoading={isNextPageLoading}
+                  items={blockList}
+                  loadNextPage={this._loadNextPage}
+                  latestBlockHeight={this.state.latestBlockHeight}
                 />
-                <Route
-                  path="/block/:blockHash"
-                  render={props => (
-                    <Block {...props} getBlock={this.getBlock} />
-                  )}
-                />
-              </Switch>
-            </div>
-          </Router>
-        </div>
+              )}
+            />
+            <Route
+              path="/block/:blockHash"
+              render={props => <Block {...props} getBlock={this.getBlock} />}
+            />
+          </Switch>
+        </Router>
       </div>
     );
   }
