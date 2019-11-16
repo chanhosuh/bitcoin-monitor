@@ -1,8 +1,9 @@
-import React, { PureComponent } from "react";
+import React, { Fragment, PureComponent } from "react";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import "./App.css";
-import Block from "./Block.js";
-import ExampleWrapper from "./ExampleWrapper";
+import Block from "../block/Block.js";
+import BlockRow from "../block/BlockRow";
+import ExampleWrapper from "../common/ExampleWrapper";
 
 // for testing
 // import testBlockData from "./test_data/blocks.json";
@@ -162,13 +163,16 @@ class App extends PureComponent {
               exact
               path="/"
               render={props => (
-                <ExampleWrapper
-                  hasNextPage={hasNextPage}
-                  isNextPageLoading={isNextPageLoading}
-                  items={blockList}
-                  loadNextPage={this._loadNextPage}
-                  latestBlockHeight={this.state.latestBlockHeight}
-                />
+                <Fragment>
+                  <h2> Current Block: {this.state.latestBlockHeight} </h2>
+                  <ExampleWrapper
+                    hasNextPage={hasNextPage}
+                    isNextPageLoading={isNextPageLoading}
+                    items={blockList}
+                    loadNextPage={this._loadNextPage}
+                    RowComponent={BlockRow}
+                  />
+                </Fragment>
               )}
             />
             <Route
