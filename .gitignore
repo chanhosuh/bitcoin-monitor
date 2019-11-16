@@ -29,4 +29,5 @@ prod.env
 # static files
 /django/static/
 !/django/static/robots.txt
+/django/react/build/
 

@@ -16,6 +16,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "postbuild": "rm -rf ../django/react/build && mv build ../django/react/",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
