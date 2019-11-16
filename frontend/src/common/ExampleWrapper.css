@@ -9,12 +9,6 @@ span.row {
   height: 100px;
   padding: 5px;
   border: 1px solid blue;
-  background-color: yellow;
-}
-
-body {
-  font-family: sans-serif;
-  text-align: center;
 }
 
 .row {

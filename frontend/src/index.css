@@ -1,5 +1,4 @@
 body {
-  margin: 4rem 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
@@ -10,7 +9,23 @@ body {
 html,
 body,
 #root {
+  min-height: 100vh;
+  font-family: Inconsolata;
+}
+/* html {
   height: 100%;
+}
+body {
+  min-height: 100%;
+} */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+* {
+  border: 1px solid red;
 }
 
 code {
@@ -18,6 +33,12 @@ code {
     monospace;
 }
 
+h1 {
+  padding: 20px;
+}
+h2 {
+  padding: 15px;
+}
 h4 {
   margin-bottom: 2rem;
   margin-top: 3rem;

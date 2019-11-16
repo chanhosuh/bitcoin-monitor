@@ -151,37 +151,61 @@ class App extends PureComponent {
     );
 
     return (
-      <div className="App">
-        <Router>
-          <h2>
-            <Link to="/">Blocks</Link>
-            <span className="navigationSpace" />
-            <Link to="/transactions">Transactions</Link>
-          </h2>
-          <Switch>
-            <Route
-              exact
-              path="/"
-              render={props => (
-                <Fragment>
-                  <h2> Current Block: {this.state.latestBlockHeight} </h2>
-                  <ExampleWrapper
-                    hasNextPage={hasNextPage}
-                    isNextPageLoading={isNextPageLoading}
-                    items={blockList}
-                    loadNextPage={this._loadNextPage}
-                    RowComponent={BlockRow}
-                  />
-                </Fragment>
-              )}
-            />
-            <Route
-              path="/block/:blockHash"
-              render={props => <Block {...props} getBlock={this.getBlock} />}
-            />
-          </Switch>
-        </Router>
-      </div>
+      <Router>
+        <div className="container">
+          <div className="menu-container">
+            <div className="menu">
+              <div className="date">Aug 14, 2016</div>
+              <div className="links">
+                <span>
+                  <Link to="/">Blocks</Link>
+                </span>
+                <span>
+                  <Link to="/transactions">Transactions</Link>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="header-container">
+            <div className="header">
+              <div className="title">Bitcoin Block Explorer</div>
+            </div>
+          </div>
+
+          <div className="page">
+            <div className="sidebar"></div>
+            <div className="content">
+              <Switch>
+                <Route
+                  exact
+                  path="/"
+                  render={props => (
+                    <ExampleWrapper
+                      hasNextPage={hasNextPage}
+                      isNextPageLoading={isNextPageLoading}
+                      items={blockList}
+                      loadNextPage={this._loadNextPage}
+                      RowComponent={BlockRow}
+                    />
+                  )}
+                />
+                <Route
+                  path="/block/:blockHash"
+                  render={props => (
+                    <Block {...props} getBlock={this.getBlock} />
+                  )}
+                />
+              </Switch>
+            </div>
+          </div>
+
+          <div className="footer">
+            <div className="footer-item">contact</div>
+            <div className="footer-item">foo</div>
+            <div className="footer-item">bar</div>
+          </div>
+        </div>
+      </Router>
     );
   }
 }
