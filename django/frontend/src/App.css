@@ -1,9 +1,10 @@
-body > #root > div {
+/* body > #root > div {
   height: 90vh;
-}
+} */
 
 .App {
   text-align: center;
+  height: 100%;
 }
 
 .App-header {
