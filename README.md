@@ -37,18 +37,14 @@ Docker is used to encapsulate the separate pieces.  Nginx is used for the produc
   
 ### Persisting blocks into Postgres
 
-To run the Celery tasks that read block data from `bitcoind` and persist to Postgres (`db` container):
-- `make bash` (defaults to bash in `django` container)
-- `./manage.py process_blockchain`
-
-You should see rpc calls in stdout and `celery` log output for the tasks.
+To run the Celery tasks that read block data from `bitcoind` and persist to Postgres (`db` container), use `make process_blockchain`.  If you attach to the `celery` logging, you will see the workers processing the block tasks.
 
 ### Block explorer frontend
 
-For dev setup, just `cd django/frontend` and then `npm start`.  Then visit `localhost:3000` in your browser.  You should see the initial list of blocks and as each celery task completes, the websocket will pick up the block message and prepend to the list.
+For dev setup, just `cd frontend` and then `npm start`.  Then visit `localhost:3000` in your browser.  You should see the initial list of blocks and as each celery task completes, the websocket will pick up the block message and prepend to the list.
 
 For prod setup, you should build the static files first:
-- `cd django/frontend`
+- `cd frontend`
 - `npm run build`
 - `cd ../../`
 - `make bash`
