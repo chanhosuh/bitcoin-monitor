@@ -17,43 +17,6 @@ h4 {
   margin-top: 3rem;
 }
 
-.panel {
-  border-radius: 0.35rem;
-  padding: 0.5rem;
-  margin-bottom: 0.2rem;
-}
-.panel.panel-blue {
-  border: 1px solid #0087ff;
-  background-color: #ddedff;
-  color: #0087ff;
-}
-.panel.panel-grey {
-  border: 1px solid #d3d3d3;
-  background-color: #f5f5f5;
-  color: #404040;
-}
-.panel.panel-yellow {
-  border: 1px solid #ffbd00;
-  background-color: #fef0b2;
-  color: #ffbd00;
-}
-.panel.panel-pink {
-  border: 1px solid #f84f7f;
-  background-color: #fad2e1;
-  color: #f84f7f;
-}
-.panel.panel-purple {
-  border: 1px solid #7f51f4;
-  background-color: #dfccff;
-  color: #7f51f4;
-}
-
-.row.row-purple {
-  border: 1px solid #7f51f4;
-  background-color: #dfccff;
-  color: #7f51f4;
-}
-
 span.navigationSpace {
   padding-left: 50px;
 }
