@@ -4,7 +4,7 @@
   justify-content: flex-start;
   background-color: #eaedf0;
   position: relative;
-  height: fill;
+  height: stretch;
 }
 
 .menu-container {
@@ -48,7 +48,7 @@
   flex-grow: 1;
   display: flex;
   justify-content: space-between;
-  height: fill;
+  height: stretch;
 }
 
 .sidebar {
