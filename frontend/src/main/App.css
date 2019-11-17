@@ -11,7 +11,6 @@
   display: flex;
   justify-content: center;
   color: #fff;
-  background-color: #5995da; /* Blue */
   padding: 5px 0;
   border: 1px solid #fff;
 }
@@ -30,7 +29,6 @@
 .header-container {
   display: flex;
   color: #5995da;
-  background-color: #d6e9fe;
   padding: 20px 0;
   justify-content: center;
 }
@@ -54,8 +52,7 @@
 }
 
 .sidebar {
-  width: 200px;
-  background-color: #f09a9d;
+  width: 150px;
 }
 
 .content {
@@ -64,12 +61,10 @@
   padding-left: 50px;
   padding-right: 50px;
   padding-bottom: 10px;
-  background-color: #f5cf8e; /* Yellow */
 }
 
 .footer {
   display: flex;
-  background-color: #d6e9fe;
   width: 100%;
   justify-content: space-around;
   align-content: center;
@@ -79,5 +74,4 @@
   width: 31%;
   margin: 20px 1.15%;
   height: 1.5rem;
-  background-color: #b2d6ff; /* Medium blue */
 }

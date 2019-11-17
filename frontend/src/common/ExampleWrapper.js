@@ -34,7 +34,11 @@ const ExampleWrapper = ({
   // Render an item or a loading indicator.
   const Item = ({ index, style }) => {
     if (!isItemLoaded(index)) {
-      return <div style={style}>Loading ... </div>;
+      return (
+        <div style={style}>
+          <div className="loading">Loading</div>
+        </div>
+      );
     } else {
       return <RowComponent items={items} index={index} style={style} />;
     }
