@@ -230,3 +230,6 @@ ps:
 process_blockchain:
 	docker-compose exec --detach django bash -c "manage.py process_blockchain"
 
+.PHONY: price_feeds
+price_feeds:
+	docker-compose exec --detach django bash -c "manage.py price_feeds"
