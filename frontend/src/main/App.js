@@ -21,17 +21,7 @@ class App extends PureComponent {
     // list paging
     currentPage: 0,
     hasNextPage: false,
-    isNextPageLoading: false,
-
-    // prices
-    BTCUSD: {
-      price: NaN,
-      change: NaN
-    },
-    ETHUSD: {
-      price: NaN,
-      change: NaN
-    }
+    isNextPageLoading: false
   };
 
   getBlock = blockHash => this.state.blocks[blockHash];

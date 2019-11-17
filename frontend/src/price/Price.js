@@ -1,5 +1,7 @@
 import React from "react";
 import "./Price.css";
+import BTCLogo from "../images/BTC-logo.svg";
+import ETHLogo from "../images/ETH-logo.svg";
 
 class Price extends React.Component {
   state = {
@@ -50,6 +52,10 @@ class Price extends React.Component {
   }
 
   render() {
+    const logos = {
+      BTC: BTCLogo,
+      ETH: ETHLogo
+    };
     var rows = [];
     for (const ticker in this.state) {
       const classes =
@@ -58,16 +64,21 @@ class Price extends React.Component {
           : "panel Price-display-decrease";
       const price = this.state[ticker].price;
 
+      const symbol = ticker.slice(0, 3);
+      const logo = logos[symbol];
       rows.push(
-        <div key={ticker}>
-          <div>{ticker}</div>
-          <div className={classes} key={Math.random()}>
-            {price}
+        <div key={ticker} className="price-row">
+          <img src={logo} alt="logo" height="20px" />
+          <div style={{ marginLeft: "7px" }}>
+            <div>{ticker}</div>
+            <div className={classes} key={Math.random()}>
+              {price}
+            </div>
           </div>
         </div>
       );
     }
-    return <div className="price-rows">{rows}</div>;
+    return <div className="price-grid">{rows}</div>;
   }
 }
 
