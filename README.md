@@ -9,8 +9,8 @@ Docker is used to encapsulate the separate pieces.  Nginx is used for the produc
 
 ### Setup
 - install Docker: [Mac](https://www.docker.com/docker-mac) | [Ubuntu](https://www.docker.com/docker-ubuntu)
-- clone the repo and change working directory to it
-- `make help` will show available `make` commands
+- clone this repo **and** the `docker-bitcoin` repo; make sure they are adjacent directories in the same parent directory
+- from the `bitcoin-monitor` directory, `make help` will show available `make` commands
 
 ### Run Docker
 
