@@ -1,9 +1,10 @@
-import React, { Fragment, PureComponent } from "react";
+import React, { PureComponent } from "react";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import "./App.css";
-import Block from "../block/Block.js";
+import Block from "../block/Block";
 import BlockRow from "../block/BlockRow";
 import ExampleWrapper from "../common/ExampleWrapper";
+import Price from "../price/Price";
 
 // for testing
 // import testBlockData from "./test_data/blocks.json";
@@ -20,7 +21,17 @@ class App extends PureComponent {
     // list paging
     currentPage: 0,
     hasNextPage: false,
-    isNextPageLoading: false
+    isNextPageLoading: false,
+
+    // prices
+    BTCUSD: {
+      price: NaN,
+      change: NaN
+    },
+    ETHUSD: {
+      price: NaN,
+      change: NaN
+    }
   };
 
   getBlock = blockHash => this.state.blocks[blockHash];
@@ -52,6 +63,7 @@ class App extends PureComponent {
 
   componentDidUpdate() {
     const state = this.state;
+    console.log("Current state: ", this.state);
     this.setState({
       hasNextPage: state.blockList.length < state.latestBlockHeight + 1,
       currentPage: Math.ceil(state.blockList.length / PAGE_LENGTH)
@@ -81,7 +93,7 @@ class App extends PureComponent {
           const latestBlockHeight = new_block.height;
           this.setState({ blockList, blocks, latestBlockHeight });
           console.log(
-            `Block list updated: height - ${latestBlockHeight}, hash - ${new_block.hash}`
+            `Block list updating: height - ${latestBlockHeight}, hash - ${new_block.hash}`
           );
         }
       };
@@ -127,7 +139,6 @@ class App extends PureComponent {
         console.log("Blocks retrieved:", data);
         this.setBlocks(data.results);
         this.setState({ isNextPageLoading: false });
-        console.log("Current state: ", this.state);
       })
       .catch(err => {
         console.error("fetchBlocks: " + err);
@@ -155,12 +166,12 @@ class App extends PureComponent {
         <div className="container">
           <div className="menu-container">
             <div className="menu">
-              <div className="date">Aug 14, 2016</div>
+              <Price />
               <div className="links">
-                <span>
+                <span style={{ padding: "10px" }}>
                   <Link to="/">Blocks</Link>
                 </span>
-                <span>
+                <span style={{ padding: "10px" }}>
                   <Link to="/transactions">Transactions</Link>
                 </span>
               </div>

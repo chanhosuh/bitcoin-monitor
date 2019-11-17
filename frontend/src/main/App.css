@@ -10,9 +10,7 @@
 .menu-container {
   display: flex;
   justify-content: center;
-  color: #fff;
   padding: 5px 0;
-  border: 1px solid #fff;
 }
 
 .menu {
