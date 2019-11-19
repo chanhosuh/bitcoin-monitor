@@ -205,6 +205,7 @@ pylint:
 hooks:
 	@echo "Installing git hooks..."
 	cp ./hooks/{commit-msg,pre-commit*} .git/hooks/
+	chmod +x .git/hooks/*
 	@echo "Hooks installed"
 
 .PHONY: requirements
