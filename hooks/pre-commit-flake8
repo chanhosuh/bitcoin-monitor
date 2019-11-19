@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+DEBUG=0
+
+debug_echo() {
+    if [ "$DEBUG" -ne "0" ]; then
+        echo "$*"
+    fi
+}
+
 # flake8 config location
 CONFIG_FILE=''
 
@@ -9,27 +17,36 @@ RESTORE='\033[0m'
 RED='\033[00;31m'
 BOLD=$(tty -s && tput bold)
 
+trap cleanup EXIT SIGHUP SIGINT SIGTERM
+
+cleanup() {
+    # cleanup after yourself!
+    debug_echo "deleting ${temp_files[@]}"
+    rm -f "${temp_files[@]}"
+}
+
+
+lint_files=()
 temp_files=()
+
+
 for file in `git diff --name-only --cached --diff-filter=d | grep '\.py$'`; do
     if `git diff --quiet "$file"`; then
         # no dirty version in working tree,
-        temp_files+=("$file")
+        lint_files+=("$file")
     else
         # need to leave working tree untouched, so 
         # save staged contents of file to temp file
-        git show ":$file" > "$file.flake8.tmp"
-        temp_files+=("$file.flake8.tmp")
+        temp_and_orig_files=(`git checkout-index --temp "$file"`)
+        temp_file=${temp_and_orig_files[0]}
+        temp_files+=("$temp_file")
+        lint_files+=("$temp_file")
     fi
 done
 
 echo ${temp_files[@]} | xargs flake8 --config="$CONFIG_FILE" --quiet
 RET_VAL=$?
 
-for file in ${temp_files[@]}; do
-    if [[ "$file" == *.flake8.tmp ]]; then
-        rm "$file"
-    fi
-done
 
 if [ "$RET_VAL" -ne 0 ]; then
     echo -e "${BOLD}flake8: ${RED}FAILED ${RESTORE}checks"

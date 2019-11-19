@@ -4,8 +4,10 @@
 # ---- SETTINGS ---- #
 ######################
 
-# project name if you are using virtualenvwrapper
-PROJECT_NAME="bitcoin-monitor"
+# standard path if you are using virtualenvwrapper;
+# replace VENV_PATH appropriately if not
+PROJECT_NAME='bitcoin-monitor'
+VENV_PATH="~/.virtualenvs/${PROJECT_NAME}"
 
 # run these hooks in this order
 hook_names=(
@@ -13,6 +15,7 @@ hook_names=(
     'whitespace'
     'forbidden'
     'flake8'
+    'black'
 )
 
 
@@ -29,13 +32,8 @@ fi
 # e.g. isort hook needs to run inside the
 # virtual env so it can properly identify
 # 3rd party packages
-if [ -n "${PROJECT_NAME}" ]; then
-    if [ -z "$VIRTUAL_ENV" ]; then
-        # this assumes you source
-        # virtualenvwrapper.sh inside bashrc
-        source "${HOME}/.bashrc"
-        workon "${PROJECT_NAME}"
-    fi
+if [ -z "$VIRTUAL_ENV" ]; then
+    source "${VENV_PATH}/bin/activate"
 fi
 
 exit_codes=()
