@@ -5,6 +5,7 @@ import Block from "../block/Block";
 import BlockRow from "../block/BlockRow";
 import ExampleWrapper from "../common/ExampleWrapper";
 import Price from "../price/Price";
+import SearchBox from "../common/SearchBox";
 
 // for testing
 // import testBlockData from "./test_data/blocks.json";
@@ -14,9 +15,10 @@ const PAGE_LENGTH = 50;
 class App extends PureComponent {
   state = {
     latestBlockHeight: -1,
-    // map block hash to block object
-    blocks: {},
-    blockList: [],
+
+    // loaded blocks
+    blocks: {}, // map hash to block
+    blockList: [], // starting from latest height
 
     // list paging
     currentPage: 0,
@@ -145,6 +147,14 @@ class App extends PureComponent {
     }
   };
 
+  displaySearchResults = searchResults => {
+    this.setState({ blockList: searchResults });
+  };
+
+  displayBlockList = () => {
+    this.setState({ blockList: [] }, this.fetchInitialBlocks);
+  };
+
   render() {
     const { hasNextPage, isNextPageLoading, blockList } = this.state;
     console.log(
@@ -171,6 +181,12 @@ class App extends PureComponent {
             <div className="header">
               <div className="title">Bitcoin Block Explorer</div>
             </div>
+          </div>
+          <div className="search-container">
+            <SearchBox
+              onSubmit={this.displaySearchResults}
+              onClear={this.displayBlockList}
+            />
           </div>
 
           <div className="page">
@@ -201,9 +217,9 @@ class App extends PureComponent {
           </div>
 
           <div className="footer">
+            <div className="footer-item">donate</div>
+            <div className="footer-item">about</div>
             <div className="footer-item">contact</div>
-            <div className="footer-item">foo</div>
-            <div className="footer-item">bar</div>
           </div>
         </div>
       </Router>
