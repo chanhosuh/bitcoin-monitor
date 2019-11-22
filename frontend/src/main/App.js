@@ -26,6 +26,22 @@ class App extends PureComponent {
     isNextPageLoading: false
   };
 
+  componentDidMount() {
+    this.fetchInitialBlocks();
+    this.connectWebSockets();
+    // for testing
+    // this.setBlocks(testBlockData);
+  }
+
+  componentDidUpdate() {
+    const state = this.state;
+    console.log("Current state: ", this.state);
+    this.setState({
+      hasNextPage: state.blockList.length < state.latestBlockHeight + 1,
+      currentPage: Math.ceil(state.blockList.length / PAGE_LENGTH)
+    });
+  }
+
   getBlock = blockHash => this.state.blocks[blockHash];
 
   setBlocks = newBlocks => {
@@ -45,22 +61,6 @@ class App extends PureComponent {
   setHeight = blockHeight => {
     this.setState({ latestBlockHeight: blockHeight });
   };
-
-  componentDidMount() {
-    this.fetchInitialBlocks();
-    this.connectWebSockets();
-    // for testing
-    // this.setBlocks(testBlockData);
-  }
-
-  componentDidUpdate() {
-    const state = this.state;
-    console.log("Current state: ", this.state);
-    this.setState({
-      hasNextPage: state.blockList.length < state.latestBlockHeight + 1,
-      currentPage: Math.ceil(state.blockList.length / PAGE_LENGTH)
-    });
-  }
 
   connectWebSockets() {
     const hostname = process.env.REACT_APP_WEBSOCKET_HOST;
@@ -137,7 +137,7 @@ class App extends PureComponent {
       });
   };
 
-  _loadNextPage = (...args) => {
+  loadNextPage = (...args) => {
     console.log("loadNextPage:", ...args);
     this.setState({ isNextPageLoading: true });
     if (this.state.blockList.length % PAGE_LENGTH === 0) {
@@ -201,7 +201,7 @@ class App extends PureComponent {
                       hasNextPage={hasNextPage}
                       isNextPageLoading={isNextPageLoading}
                       items={blockList}
-                      loadNextPage={this._loadNextPage}
+                      loadNextPage={this.loadNextPage}
                       RowComponent={BlockRow}
                     />
                   )}
