@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "./Block.css";
 
-const BlockRow = ({ items, index, style }) => {
+const BlockRow = ({ item }) => {
   /*
     age: "10 years, 9 months ago"
     bits: "ffff001d"
@@ -15,16 +15,14 @@ const BlockRow = ({ items, index, style }) => {
     timestamp: 1233150472
     version: 1
     */
-  const { height, hash, age, num_transactions, timestamp } = items[index];
+  const { height, hash, age, num_transactions, timestamp } = { ...item };
   return (
-    <div style={style}>
-      <div className="row">
-        <span className="rowelem">{height}</span>
-        <span className="rowelem">
-          <Link to={`/block/${hash}`}>{hash}</Link>
-        </span>
-        <span className="rowelem">{age}</span>
-      </div>
+    <div className="row">
+      <span className="rowelem">{height}</span>
+      <span className="rowelem">
+        <Link to={`/block/${hash}`}>{hash}</Link>
+      </span>
+      <span className="rowelem">{age}</span>
     </div>
   );
 };

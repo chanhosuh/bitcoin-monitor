@@ -1,3 +1,11 @@
+.List {
+  border: 1px solid #d9dddd;
+}
+
+.ListItemEven {
+  background-color: #f8f8f0;
+}
+
 span.rowelem {
   display: inline-block;
   padding: 5px;
@@ -14,9 +22,6 @@ span.row {
 .row {
   display: flex;
   align-items: center;
-  background-color: white;
-  border-bottom: 1px solid #eee;
-  box-sizing: border-box;
 }
 
 .loading {

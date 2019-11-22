@@ -40,7 +40,15 @@ const ExampleWrapper = ({
         </div>
       );
     } else {
-      return <RowComponent items={items} index={index} style={style} />;
+      const item = items[index];
+      return (
+        <div
+          className={index % 2 ? "ListItemOdd" : "ListItemEven"}
+          style={style}
+        >
+          <RowComponent item={item} />
+        </div>
+      );
     }
   };
 
