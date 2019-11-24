@@ -22,7 +22,6 @@ def process_block(self, raw_block, height):  # pylint: disable=unused-argument
     :param height: integer
         height on block chain (genesis block is 0)
     """
-    raw_block = bytes.fromhex(raw_block)
     block = parse_block(raw_block, height)
 
     channel_layer = get_channel_layer()

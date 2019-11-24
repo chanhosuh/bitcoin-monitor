@@ -12,13 +12,20 @@ logger = logging.getLogger(__name__)
 
 
 @db.transaction.atomic
-def parse_block(byte_stream, height):
-    byte_stream = streamify_if_bytes(byte_stream)
+def parse_block(raw_block, height):
+    """
+    :param raw_block: string
+        hex string for serialized block
+    :param height: integer
+        height on block chain (genesis block is 0)
+    """
+    block_bytes = bytes.fromhex(raw_block)
+    byte_stream = streamify_if_bytes(block_bytes)
 
-    version = int.from_bytes(byte_stream.read(4), 'little')
+    version = int.from_bytes(byte_stream.read(4), "little")
     prev_hash = byte_stream.read(32).hex()[::-1]
     merkle_root = byte_stream.read(32).hex()[::-1]
-    timestamp = int.from_bytes(byte_stream.read(4), 'little')
+    timestamp = int.from_bytes(byte_stream.read(4), "little")
     bits = byte_stream.read(4).hex()
     nonce = byte_stream.read(4).hex()
 
@@ -34,14 +41,12 @@ def parse_block(byte_stream, height):
         nonce=nonce,
         num_transactions=num_transactions,
     )
-    created_or_skipped = 'created' if created else 'skipped'
+    created_or_skipped = "created" if created else "skipped"
 
     if created:
-        logger.debug(f'No block in DB for height {height}, creating...')
+        logger.debug(f"No block in DB for height {height}, creating...")
 
-        tx_parts = [
-            parse_transaction(byte_stream) for _ in range(num_transactions)
-        ]
+        tx_parts = [parse_transaction(byte_stream) for _ in range(num_transactions)]
         transactions = [t[0] for t in tx_parts]
 
         for transaction in transactions:
@@ -60,10 +65,10 @@ def parse_block(byte_stream, height):
             # related names, vin and vout, are attached
             transaction.txid = transaction._txid()
 
-        Transaction.objects.bulk_update(transactions, ['txid'])
+        Transaction.objects.bulk_update(transactions, ["txid"])
 
-        logger.debug('Done creating transactions.')
+        logger.debug("Done creating transactions.")
 
-    logger.info(f'block {created_or_skipped} at height {height}')
+    logger.info(f"block {created_or_skipped} at height {height}")
 
     return block
