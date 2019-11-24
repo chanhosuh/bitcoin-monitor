@@ -16,13 +16,20 @@ const BlockRow = ({ item }) => {
     version: 1
     */
   const { height, hash, age, num_transactions, timestamp } = { ...item };
+  const datetime = new Date(timestamp * 1000).toLocaleString();
   return (
     <div className="row">
       <span className="rowelem">{height}</span>
       <span className="rowelem">
+        <div>{age}</div>
+        <div>{datetime}</div>
+      </span>
+      <span className="rowelem">amount transacted</span>
+      <span className="rowelem">{num_transactions}</span>
+      <span className="rowelem">created by</span>
+      <span className="rowelem">
         <Link to={`/block/${hash}`}>{hash}</Link>
       </span>
-      <span className="rowelem">{age}</span>
     </div>
   );
 };

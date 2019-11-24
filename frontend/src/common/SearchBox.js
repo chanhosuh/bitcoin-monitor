@@ -23,15 +23,13 @@ class SearchBox extends React.Component {
     return (
       <form className="search-box" onSubmit={this.getSearchResults}>
         <input
-          type="text"
+          type="search"
           value={this.state.searchString}
           onChange={this.onChange}
           required
           placeholder="block or transaction hash"
         />
-        <button type="submit">
-          <i className="fa fa-search"></i>
-        </button>
+        <button type="submit">Search</button>
       </form>
     );
   }

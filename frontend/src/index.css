@@ -8,6 +8,14 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: white;
+  background: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/41294/hero.jpg)
+    no-repeat center center fixed;
+  background-size: cover;
+}
+
+a {
+  color: white;
 }
 
 html,

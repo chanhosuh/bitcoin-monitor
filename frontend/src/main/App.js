@@ -179,7 +179,7 @@ class App extends PureComponent {
           </div>
           <div className="header-container">
             <div className="header">
-              <div className="title">Bitcoin Block Explorer</div>
+              <div className="title outlined">Bitcoin Block Explorer</div>
             </div>
           </div>
           <div className="search-container">

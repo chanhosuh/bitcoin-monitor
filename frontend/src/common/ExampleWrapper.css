@@ -1,9 +1,12 @@
 .List {
   border: 1px solid #d9dddd;
+  /* background-color: #eaedf0; */
+  background: rgba(0, 0, 0, 0.3);
 }
 
 .ListItemEven {
-  background-color: #f8f8f0;
+  /* background-color: #f8f8f0; */
+  background: rgba(0, 0, 0, 0.3);
 }
 
 span.rowelem {
