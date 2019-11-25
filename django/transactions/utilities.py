@@ -1,7 +1,12 @@
 import logging
 
 from core.serialization import decode_varint, streamify_if_bytes
-from transactions.models import Transaction, TransactionInput, TransactionOutput
+from transactions.models import (
+    Transaction,
+    TransactionInput,
+    TransactionOutput,
+    Witness,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -59,9 +64,18 @@ def parse_output(byte_stream, n):
     len_script_pubkey = decode_varint(byte_stream)
     script_pubkey = byte_stream.read(len_script_pubkey).hex()
 
-    tx_output = TransactionOutput(value=value, script_pubkey=script_pubkey, n=n,)
+    tx_output = TransactionOutput(value=value, script_pubkey=script_pubkey, n=n)
     return tx_output
 
 
 def parse_witness(byte_stream):
-    ...
+    num_stack_items = decode_varint(byte_stream)
+
+    stack_items = []
+    for _ in range(num_stack_items):
+        size = decode_varint(byte_stream)
+        item = byte_stream.read(size)
+        stack_items.append(item)
+
+    witness = Witness(stack_items=stack_items)
+    return witness

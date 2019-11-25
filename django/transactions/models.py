@@ -40,6 +40,7 @@ https://bitcoin.org/en/developer-reference#raw-transaction-format
 """
 import logging
 
+from django.contrib.postgres.fields.array import ArrayField
 from django.db import models
 from django.db.models.fields import BigIntegerField
 
@@ -57,12 +58,12 @@ class Transaction(TimeStampedModel):
 
     txid = HexField(max_length=64)
 
-    version = models.BigIntegerField(help_text='only version 1 valid in Bitcoin Core')
+    version = models.BigIntegerField(help_text="only version 1 valid in Bitcoin Core")
     locktime = models.BigIntegerField()
 
     block = models.ForeignKey(
-        'blocks.Block',
-        related_name='transactions',
+        "blocks.Block",
+        related_name="transactions",
         on_delete=models.PROTECT,
         null=True,
     )
@@ -78,27 +79,25 @@ class Transaction(TimeStampedModel):
         return hash256(self.serialize()).hex()
 
     def serialize(self):
-        raw_tx = b''
-        raw_tx += self.version.to_bytes(4, 'little')
+        raw_tx = b""
+        raw_tx += self.version.to_bytes(4, "little")
         raw_tx += encode_as_varint(len(self.vin.all()))
         for input_ in self.vin.all():
             raw_tx += input_.serialize()
         raw_tx += encode_as_varint(len(self.vout.all()))
         for output in self.vout.all():
             raw_tx += output.serialize()
-        raw_tx += self.locktime.to_bytes(4, 'little')
+        raw_tx += self.locktime.to_bytes(4, "little")
         return raw_tx
 
 
 class TransactionInput(TimeStampedModel):
 
     transaction = models.ForeignKey(
-        'transactions.Transaction',
-        related_name='vin',
-        on_delete=models.CASCADE,
+        "transactions.Transaction", related_name="vin", on_delete=models.CASCADE,
     )
 
-    txid = HexField(max_length=64, help_text='transaction hash in hex (32 bytes)')
+    txid = HexField(max_length=64, help_text="transaction hash in hex (32 bytes)")
     vout = models.BigIntegerField()
 
     sequence = models.BigIntegerField()
@@ -106,9 +105,9 @@ class TransactionInput(TimeStampedModel):
     script_sig = HexField(max_length=20000)
 
     def serialize(self):
-        raw_tx = b''
+        raw_tx = b""
         raw_tx += bytes.fromhex(self.txid)
-        raw_tx += self.vout.to_bytes(4, 'little')
+        raw_tx += self.vout.to_bytes(4, "little")
         script_sig_as_bytes = bytes.fromhex(self.script_sig)
         raw_tx += encode_as_varint(len(script_sig_as_bytes))
         raw_tx += script_sig_as_bytes
@@ -118,9 +117,7 @@ class TransactionInput(TimeStampedModel):
 class TransactionOutput(TimeStampedModel):
 
     transaction = models.ForeignKey(
-        'transactions.Transaction',
-        related_name='vout',
-        on_delete=models.CASCADE,
+        "transactions.Transaction", related_name="vout", on_delete=models.CASCADE,
     )
 
     value = BigIntegerField()
@@ -129,12 +126,25 @@ class TransactionOutput(TimeStampedModel):
     script_pubkey = HexField(max_length=20000)
 
     class Meta:
-        ordering = ['n', ]
+        ordering = [
+            "n",
+        ]
 
     def serialize(self):
-        raw_tx = b''
-        raw_tx += self.value.to_bytes(8, 'little')
+        raw_tx = b""
+        raw_tx += self.value.to_bytes(8, "little")
         script_pubkey_as_bytes = bytes.fromhex(self.script_pubkey)
         raw_tx += encode_as_varint(len(script_pubkey_as_bytes))
         raw_tx += script_pubkey_as_bytes
         return raw_tx
+
+
+class Witness(TimeStampedModel):
+
+    transaction_input = models.ForeignKey(
+        "transactions.TransactionInput",
+        related_name="witness",
+        on_delete=models.CASCADE,
+    )
+
+    stack_items = ArrayField(HexField(max_length=20000))
