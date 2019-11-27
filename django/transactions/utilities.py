@@ -45,7 +45,7 @@ def parse_transaction(byte_stream):
 
 
 def parse_input(byte_stream):
-    prev_txid = byte_stream.read(32).hex()[::-1]
+    prev_txid = byte_stream.read(32)[::-1].hex()
     prev_index = int.from_bytes(byte_stream.read(4), "little")
 
     len_script_sig = decode_varint(byte_stream)
@@ -69,6 +69,7 @@ def parse_output(byte_stream, n):
 
 
 def parse_witness(byte_stream):
+    """ https://bitcoin.stackexchange.com/a/77190/63266 """
     num_stack_items = decode_varint(byte_stream)
 
     stack_items = []

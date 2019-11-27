@@ -28,8 +28,8 @@ def parse_block(raw_block, height):
     byte_stream = streamify_if_bytes(block_bytes)
 
     version = int.from_bytes(byte_stream.read(4), "little")
-    prev_hash = byte_stream.read(32).hex()[::-1]
-    merkle_root = byte_stream.read(32).hex()[::-1]
+    prev_hash = byte_stream.read(32)[::-1].hex()
+    merkle_root = byte_stream.read(32)[::-1].hex()
     timestamp = int.from_bytes(byte_stream.read(4), "little")
     bits = byte_stream.read(4).hex()
     nonce = byte_stream.read(4).hex()
