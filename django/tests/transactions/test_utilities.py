@@ -1,9 +1,3 @@
-from unittest.case import TestCase
-
-from core.serialization import streamify_if_bytes
-from transactions.utilities import parse_input
-
-
 """
 https://bitcoin.org/en/developer-reference#raw-transaction-format
 
@@ -77,6 +71,10 @@ https://bitcoin.org/en/developer-reference#raw-transaction-format
 | 70c37d1341f3b46588ac ................ P2PKH script
 | 00000000 ............................ Locktime
 """
+from unittest.case import TestCase
+
+from core.serialization import streamify_if_bytes
+from transactions.utilities import parse_input
 
 
 class TransactionUtilitiesTest(TestCase):

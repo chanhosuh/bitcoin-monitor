@@ -14,15 +14,15 @@ def encode_as_varint(x):
     https://bitcoin.org/en/developer-reference#compactsize-unsigned-integers
     """
     if 0 <= x <= 252:
-        return x.to_bytes(1, 'little')
-    elif 253 <= x <= 0xffff:
-        return b'\xfd' + x.to_bytes(2, 'little')
-    elif 0x10000 <= x <= 0xffffffff:
-        return b'\xfe' + x.to_bytes(4, 'little')
-    elif 0x100000000 <= x <= 0xffffffffffffffff:
-        return b'\xff' + x.to_bytes(8, 'little')
+        return x.to_bytes(1, "little")
+    elif 253 <= x <= 0xFFFF:
+        return b"\xfd" + x.to_bytes(2, "little")
+    elif 0x10000 <= x <= 0xFFFFFFFF:
+        return b"\xfe" + x.to_bytes(4, "little")
+    elif 0x100000000 <= x <= 0xFFFFFFFFFFFFFFFF:
+        return b"\xff" + x.to_bytes(8, "little")
     else:
-        raise SerializationError(f'integer is out of range: {x}')
+        raise SerializationError(f"integer is out of range: {x}")
 
 
 def decode_varint(byte_stream):
@@ -40,9 +40,9 @@ def decode_varint(byte_stream):
     elif x == 255:
         int_bytes = byte_stream.read(8)
     else:
-        raise Exception()
+        raise SerializationError(f"byte is out of range: {x}")
 
-    return int.from_bytes(int_bytes, 'little')
+    return int.from_bytes(int_bytes, "little")
 
 
 def streamify_if_bytes(byte_stream):
