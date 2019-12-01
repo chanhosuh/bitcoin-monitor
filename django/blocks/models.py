@@ -69,9 +69,9 @@ class Block(TimeStampedModel):
     hash = HexField(primary_key=True, max_length=64)
 
     # block height (zero-indexed)
-    height = models.PositiveIntegerField(help_text='zero-index block height')
+    height = models.PositiveIntegerField(help_text="zero-index block height")
 
-    prev_hash = HexField(max_length=64, help_text='block hash in hex (32 bytes)')
+    prev_hash = HexField(max_length=64, help_text="block hash in hex (32 bytes)")
 
     # block version
     version = models.PositiveIntegerField()
@@ -91,28 +91,28 @@ class Block(TimeStampedModel):
     num_transactions = models.PositiveIntegerField()
 
     class Meta:
-        ordering = ('-height', )
+        ordering = ("-height",)
 
     def save(self, *args, **kwargs):  # pylint: disable=arguments-differ
         self.hash = self._hash()
         super().save(*args, **kwargs)
 
     def __repr__(self):
-        return f'<Block height={self.height}, hash={self.hash}>'
+        return f"<Block height={self.height}, hash={self.hash}>"
 
     def __str__(self):
         return self.hash
 
     def _hash(self):
-        return hash256(self.raw_header).hex()[::-1]
+        return hash256(self.raw_header)[::-1].hex()
 
     @property
     def raw_header(self):
-        raw_header = b''
-        raw_header += self.version.to_bytes(4, 'little')
-        raw_header += bytes.fromhex(self.prev_hash[::-1])
-        raw_header += bytes.fromhex(self.merkle_root[::-1])
-        raw_header += self.timestamp.to_bytes(4, 'little')
+        raw_header = b""
+        raw_header += self.version.to_bytes(4, "little")
+        raw_header += bytes.fromhex(self.prev_hash)[::-1]
+        raw_header += bytes.fromhex(self.merkle_root)[::-1]
+        raw_header += self.timestamp.to_bytes(4, "little")
         raw_header += bytes.fromhex(self.bits)
         raw_header += bytes.fromhex(self.nonce)
         return raw_header
