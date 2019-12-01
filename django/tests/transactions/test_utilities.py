@@ -14,7 +14,49 @@ from transactions.utilities import (
 
 
 class TransactionUtilitiesTest(TestCase):
+    def test_parse_transaction(self):
+        tx_hex = (
+            "01000000"  # Version
+            "01"  # Number of inputs
+            "7b1eabe0209b1fe794124575ef807057"
+            "c77ada2138ae4fa8d6c4de0398a14f3f"  # Outpoint TXID
+            "00000000"  # Outpoint index number
+            "49"  # Bytes in sig. script: 73
+            "48"  # Push 72 bytes as data
+            "30450221008949f0cb400094ad2b5eb3"
+            "99d59d01c14d73d8fe6e96df1a7150de"
+            "b388ab8935022079656090d7f6bac4c9"
+            "a94e0aad311a4268e082a725f8aeae05"
+            "73fb12ff866a5f01"  # Secp256k1 signature
+            "ffffffff"  # Sequence number: UINT32_MAX
+            "01"  # Number of outputs
+            "f0ca052a01000000"  # Satoshis (49.99990000 BTC)
+            "19"  # Bytes in pubkey script: 25
+            "76"  # OP_DUP
+            "a9"  # OP_HASH160
+            "14"  # Push 20 bytes as data
+            "cbc20a7664f2f69e5355aa427045bc15"
+            "e7c6c772"  # PubKey hash
+            "88"  # OP_EQUALVERIFY
+            "ac"  # OP_CHECKSIG
+            "00000000"  # locktime: 0 (a block height)
+        )
+        tx_bytes = bytes.fromhex(tx_hex)
+        tx_bytes = streamify_if_bytes(tx_bytes)
+        transaction, inputs, outputs = parse_transaction(tx_bytes)
+
+        self.assertEqual(transaction.version, 1)
+        self.assertEqual(transaction.locktime, 0)
+
+        self.assertEqual(len(inputs), 1)
+        self.assertEqual(len(outputs), 1)
+
+        for input_ in inputs:
+            self.assertIsNone(input_.witness, "no witness for legacy tx")
+
     def test_parse_input(self):
+        """ continuation of test_parse_transaction to increase
+        readability and lessen test noise """
         input_hex = (
             "7b1eabe0209b1fe794124575ef807057"
             "c77ada2138ae4fa8d6c4de0398a14f3f"  # Outpoint TXID
@@ -59,6 +101,8 @@ class TransactionUtilitiesTest(TestCase):
         )
 
     def test_parse_output(self):
+        """ continuation of test_parse_transaction to increase
+        readability and lessen test noise """
         output_hex = (
             "f0ca052a01000000"  # Satoshis (49.99990000 BTC)
             "19"  # Bytes in pubkey script: 25
@@ -88,44 +132,6 @@ class TransactionUtilitiesTest(TestCase):
         )
         self.assertEqual(tx_output.n, 0)
 
-    def test_parse_transaction(self):
-        tx_hex = (
-            "01000000"  # Version
-            "01"  # Number of inputs
-            "7b1eabe0209b1fe794124575ef807057"
-            "c77ada2138ae4fa8d6c4de0398a14f3f"  # Outpoint TXID
-            "00000000"  # Outpoint index number
-            "49"  # Bytes in sig. script: 73
-            "48"  # Push 72 bytes as data
-            "30450221008949f0cb400094ad2b5eb3"
-            "99d59d01c14d73d8fe6e96df1a7150de"
-            "b388ab8935022079656090d7f6bac4c9"
-            "a94e0aad311a4268e082a725f8aeae05"
-            "73fb12ff866a5f01"  # Secp256k1 signature
-            "ffffffff"  # Sequence number: UINT32_MAX
-            "01"  # Number of outputs
-            "f0ca052a01000000"  # Satoshis (49.99990000 BTC)
-            "19"  # Bytes in pubkey script: 25
-            "76"  # OP_DUP
-            "a9"  # OP_HASH160
-            "14"  # Push 20 bytes as data
-            "cbc20a7664f2f69e5355aa427045bc15"
-            "e7c6c772"  # PubKey hash
-            "88"  # OP_EQUALVERIFY
-            "ac"  # OP_CHECKSIG
-            "00000000"  # locktime: 0 (a block height)
-        )
-        tx_bytes = bytes.fromhex(tx_hex)
-        tx_bytes = streamify_if_bytes(tx_bytes)
-        transaction, inputs, outputs, witnesses = parse_transaction(tx_bytes)
-
-        self.assertEqual(transaction.version, 1)
-        self.assertEqual(transaction.locktime, 0)
-
-        self.assertEqual(len(witnesses), 0, "no witness for legacy tx")
-        self.assertEqual(len(inputs), 1)
-        self.assertEqual(len(outputs), 1)
-
     def test_parse_coinbase_transaction(self):
         coinbase_tx_hex = (
             "01000000"  # Version
@@ -148,11 +154,11 @@ class TransactionUtilitiesTest(TestCase):
         )
         coinbase_tx_bytes = bytes.fromhex(coinbase_tx_hex)
         coinbase_tx_bytes = streamify_if_bytes(coinbase_tx_bytes)
-        transaction, inputs, outputs, witnesses = parse_transaction(coinbase_tx_bytes)
+        transaction, inputs, outputs = parse_transaction(coinbase_tx_bytes)
 
         # --------- coinbase-specific asserts ---------- #
-        self.assertEqual(len(witnesses), 0, "no witness for coinbase tx")
         self.assertEqual(len(inputs), 1, "coinbase tx has one input")
+        self.assertIsNone(inputs[0].witness, "no witness for coinbase tx")
 
         coinbase_input = inputs[0]
         self.assertEqual(coinbase_input.txid, "00" * 32, "outpoint txid must be null")
@@ -164,7 +170,34 @@ class TransactionUtilitiesTest(TestCase):
         self.assertEqual(transaction.version, 1)
         self.assertEqual(transaction.locktime, 0)
 
+    def test_parse_segwit_transaction(self):
+        """
+        https://btc-explorer.com/tx/e028625516b04e9652c156c45483779a767e9e8b73da126140e55a53c22cd6ab
+
+        tests/data/segwit_native_3.json
+        """
+        tx_hex = "01000000000101dca4c43a7ccf697068782784b281b5fc00f9de3e3b800870f890505cc1ae1ed10100000000ffffffff03808d5b000000000017a914c462d9a12ba8739c3080df25d302f49c2326bb2b87501d6302000000001976a91426ec86b2fbfe054f0a4c8f9f875229bdb570701088ace6eedb1a00000000220020701a8d401c84fb13e6baf169d59684e17abd9fa216c8cc5b9fc63d622ff8c58d04004730440220132c0a8e96742ad8fe23bd77fd5646c8f227baaaa43f0bc84cc610f562bffaa2022071100f27280c36e3421d50d9be5e87e12cc0f742c2e9a4957ad9773cc776d7d001473044022054e768d8bbd05ed384a0b362a7bcacd7a4e1c51ce0c758da8d54ef7308af1ac402205d645e8c96d63819c2759f6de95f6372d8f5d9168a92ea512a304faa28837a1f016952210375e00eb72e29da82b89367947f29ef34afb75e8654f6ea368e0acdfd92976b7c2103a1b26313f430c4b15bb1fdce663207659d8cac749a0e53d70eff01874496feff2103c96d495bfdd5ba4145e3e046fee45e84a8a48ad05bd8dbb395c011a32cf9f88053ae00000000"
+        tx_bytes = bytes.fromhex(tx_hex)
+        transaction, inputs, outputs = parse_transaction(tx_bytes)
+
+        self.assertEqual(transaction.version, 1)
+        self.assertEqual(transaction.locktime, 0)
+
+        self.assertEqual(len(inputs), 1)
+        self.assertEqual(len(outputs), 3)
+
+        input_ = inputs[0]
+        self.assertEqual(
+            input_.txid,
+            "d11eaec15c5090f87008803b3edef900fcb581b2842778687069cf7c3ac4a4dc",
+        )
+        self.assertEqual(input_.vout, 1)
+        self.assertEqual(input_.script_sig, "")
+        self.assertEqual(len(input_.witness), 4)
+
     def test_parse_witness(self):
+        """ continuation of 'test_parse_segwit_transaction' but
+        separated out for readability and to lessen test noise """
         witness_hex = (
             "04"  # number of stack items
             "00"  # item size
@@ -177,8 +210,7 @@ class TransactionUtilitiesTest(TestCase):
         )
         witness_bytes = bytes.fromhex(witness_hex)
         witness_bytes = streamify_if_bytes(witness_bytes)
-        witness = parse_witness(witness_bytes)
-        witness_stack_items = witness.stack_items
+        witness_stack_items = parse_witness(witness_bytes)
         self.assertListEqual(
             witness_stack_items,
             [
@@ -194,28 +226,3 @@ class TransactionUtilitiesTest(TestCase):
                 ),
             ],
         )
-
-    def test_parse_segwit_transaction(self):
-        """
-        https://btc-explorer.com/tx/e028625516b04e9652c156c45483779a767e9e8b73da126140e55a53c22cd6ab
-
-        tests/data/segwit_native_3.json
-        """
-        tx_hex = "01000000000101dca4c43a7ccf697068782784b281b5fc00f9de3e3b800870f890505cc1ae1ed10100000000ffffffff03808d5b000000000017a914c462d9a12ba8739c3080df25d302f49c2326bb2b87501d6302000000001976a91426ec86b2fbfe054f0a4c8f9f875229bdb570701088ace6eedb1a00000000220020701a8d401c84fb13e6baf169d59684e17abd9fa216c8cc5b9fc63d622ff8c58d04004730440220132c0a8e96742ad8fe23bd77fd5646c8f227baaaa43f0bc84cc610f562bffaa2022071100f27280c36e3421d50d9be5e87e12cc0f742c2e9a4957ad9773cc776d7d001473044022054e768d8bbd05ed384a0b362a7bcacd7a4e1c51ce0c758da8d54ef7308af1ac402205d645e8c96d63819c2759f6de95f6372d8f5d9168a92ea512a304faa28837a1f016952210375e00eb72e29da82b89367947f29ef34afb75e8654f6ea368e0acdfd92976b7c2103a1b26313f430c4b15bb1fdce663207659d8cac749a0e53d70eff01874496feff2103c96d495bfdd5ba4145e3e046fee45e84a8a48ad05bd8dbb395c011a32cf9f88053ae00000000"
-        tx_bytes = bytes.fromhex(tx_hex)
-        transaction, inputs, outputs, witnesses = parse_transaction(tx_bytes)
-
-        self.assertEqual(transaction.version, 1)
-        self.assertEqual(transaction.locktime, 0)
-
-        self.assertEqual(len(inputs), 1)
-        self.assertEqual(len(outputs), 3)
-        self.assertEqual(len(witnesses), 1)
-
-        input_ = inputs[0]
-        self.assertEqual(
-            input_.txid,
-            "d11eaec15c5090f87008803b3edef900fcb581b2842778687069cf7c3ac4a4dc",
-        )
-        self.assertEqual(input_.vout, 1)
-        self.assertEqual(input_.script_sig, "")

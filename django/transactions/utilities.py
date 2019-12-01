@@ -1,12 +1,7 @@
 import logging
 
 from core.serialization import decode_varint, streamify_if_bytes
-from transactions.models import (
-    Transaction,
-    TransactionInput,
-    TransactionOutput,
-    Witness,
-)
+from transactions.models import Transaction, TransactionInput, TransactionOutput
 
 
 logger = logging.getLogger(__name__)
@@ -33,15 +28,15 @@ def parse_transaction(byte_stream):
 
     if is_segwit:
         witnesses = [parse_witness(byte_stream) for _ in range(num_inputs)]
-    else:
-        witnesses = []
+        for input_, witness in zip(inputs, witnesses):
+            input_.witness = witness
 
     locktime_bytes = byte_stream.read(4)
     locktime = int.from_bytes(locktime_bytes, "little")
 
     transaction = Transaction(version=version, locktime=locktime)
 
-    return transaction, inputs, outputs, witnesses
+    return transaction, inputs, outputs
 
 
 def parse_input(byte_stream):
@@ -78,5 +73,4 @@ def parse_witness(byte_stream):
         item = byte_stream.read(size)
         stack_items.append(item)
 
-    witness = Witness(stack_items=stack_items)
-    return witness
+    return stack_items

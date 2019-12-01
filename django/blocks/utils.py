@@ -59,17 +59,12 @@ def parse_block(raw_block, height):
 
         Transaction.objects.bulk_create(transactions)
 
-        for transaction, inputs, outputs, witnesses in tx_parts:
-            for input_, witness in zip(inputs, witnesses):
-                input_.transaction = transaction
-                witness.transaction_input = input_
-
-            for output in outputs:
-                output.transaction = transaction
+        for transaction, inputs, outputs in tx_parts:
+            for in_or_out in inputs + outputs:
+                in_or_out.transaction = transaction
 
             TransactionInput.objects.bulk_create(inputs)
             TransactionOutput.objects.bulk_create(outputs)
-            Witness.objects.bulk_create(witnesses)
 
         for transaction in transactions:
             # create txid (transaction hash) after the
