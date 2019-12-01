@@ -8,5 +8,11 @@ python:
 services:
   - docker
 
+
+install:
+  - cd ../
+  - git clone https://github.com/chanhosuh/docker-bitcoin.git
+  - cd $TRAVIS_BUILD_DIR
+
 script:
-- make test
+  - make test
