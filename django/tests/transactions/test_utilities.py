@@ -176,7 +176,22 @@ class TransactionUtilitiesTest(TestCase):
 
         tests/data/segwit_native_3.json
         """
-        tx_hex = "01000000000101dca4c43a7ccf697068782784b281b5fc00f9de3e3b800870f890505cc1ae1ed10100000000ffffffff03808d5b000000000017a914c462d9a12ba8739c3080df25d302f49c2326bb2b87501d6302000000001976a91426ec86b2fbfe054f0a4c8f9f875229bdb570701088ace6eedb1a00000000220020701a8d401c84fb13e6baf169d59684e17abd9fa216c8cc5b9fc63d622ff8c58d04004730440220132c0a8e96742ad8fe23bd77fd5646c8f227baaaa43f0bc84cc610f562bffaa2022071100f27280c36e3421d50d9be5e87e12cc0f742c2e9a4957ad9773cc776d7d001473044022054e768d8bbd05ed384a0b362a7bcacd7a4e1c51ce0c758da8d54ef7308af1ac402205d645e8c96d63819c2759f6de95f6372d8f5d9168a92ea512a304faa28837a1f016952210375e00eb72e29da82b89367947f29ef34afb75e8654f6ea368e0acdfd92976b7c2103a1b26313f430c4b15bb1fdce663207659d8cac749a0e53d70eff01874496feff2103c96d495bfdd5ba4145e3e046fee45e84a8a48ad05bd8dbb395c011a32cf9f88053ae00000000"
+        tx_hex = (
+            "01000000000101dca4c43a7ccf697068782784b281b5fc00f9de3e3b8008"
+            "70f890505cc1ae1ed10100000000ffffffff03808d5b000000000017a914"
+            "c462d9a12ba8739c3080df25d302f49c2326bb2b87501d63020000000019"
+            "76a91426ec86b2fbfe054f0a4c8f9f875229bdb570701088ace6eedb1a00"
+            "000000220020701a8d401c84fb13e6baf169d59684e17abd9fa216c8cc5b"
+            "9fc63d622ff8c58d04004730440220132c0a8e96742ad8fe23bd77fd5646"
+            "c8f227baaaa43f0bc84cc610f562bffaa2022071100f27280c36e3421d50"
+            "d9be5e87e12cc0f742c2e9a4957ad9773cc776d7d001473044022054e768"
+            "d8bbd05ed384a0b362a7bcacd7a4e1c51ce0c758da8d54ef7308af1ac402"
+            "205d645e8c96d63819c2759f6de95f6372d8f5d9168a92ea512a304faa28"
+            "837a1f016952210375e00eb72e29da82b89367947f29ef34afb75e8654f6"
+            "ea368e0acdfd92976b7c2103a1b26313f430c4b15bb1fdce663207659d8c"
+            "ac749a0e53d70eff01874496feff2103c96d495bfdd5ba4145e3e046fee4"
+            "5e84a8a48ad05bd8dbb395c011a32cf9f88053ae00000000"
+        )
         tx_bytes = bytes.fromhex(tx_hex)
         transaction, inputs, outputs = parse_transaction(tx_bytes)
 
@@ -202,11 +217,18 @@ class TransactionUtilitiesTest(TestCase):
             "04"  # number of stack items
             "00"  # item size
             "47"  # item size
-            "30440220132c0a8e96742ad8fe23bd77fd5646c8f227baaaa43f0bc84cc610f562bffaa2022071100f27280c36e3421d50d9be5e87e12cc0f742c2e9a4957ad9773cc776d7d001"
+            "30440220132c0a8e96742ad8fe23bd77fd5646c8f227baaaa43f0bc84cc610f56"
+            "2bffaa2022071100f27280c36e3421d50d9be5e87e12cc0f742c2e9a4957ad977"
+            "3cc776d7d001"
             "47"  # item size
-            "3044022054e768d8bbd05ed384a0b362a7bcacd7a4e1c51ce0c758da8d54ef7308af1ac402205d645e8c96d63819c2759f6de95f6372d8f5d9168a92ea512a304faa28837a1f01"
+            "3044022054e768d8bbd05ed384a0b362a7bcacd7a4e1c51ce0c758da8d54ef730"
+            "8af1ac402205d645e8c96d63819c2759f6de95f6372d8f5d9168a92ea512a304f"
+            "aa28837a1f01"
             "69"  # item size
-            "52210375e00eb72e29da82b89367947f29ef34afb75e8654f6ea368e0acdfd92976b7c2103a1b26313f430c4b15bb1fdce663207659d8cac749a0e53d70eff01874496feff2103c96d495bfdd5ba4145e3e046fee45e84a8a48ad05bd8dbb395c011a32cf9f88053ae"
+            "52210375e00eb72e29da82b89367947f29ef34afb75e8654f6ea368e0acdfd929"
+            "76b7c2103a1b26313f430c4b15bb1fdce663207659d8cac749a0e53d70eff0187"
+            "4496feff2103c96d495bfdd5ba4145e3e046fee45e84a8a48ad05bd8dbb395c01"
+            "1a32cf9f88053ae"
         )
         witness_bytes = bytes.fromhex(witness_hex)
         witness_bytes = streamify_if_bytes(witness_bytes)
@@ -216,13 +238,20 @@ class TransactionUtilitiesTest(TestCase):
             [
                 bytes.fromhex(""),
                 bytes.fromhex(
-                    "30440220132c0a8e96742ad8fe23bd77fd5646c8f227baaaa43f0bc84cc610f562bffaa2022071100f27280c36e3421d50d9be5e87e12cc0f742c2e9a4957ad9773cc776d7d001"
+                    "30440220132c0a8e96742ad8fe23bd77fd5646c8f227baaaa43f0bc8"
+                    "4cc610f562bffaa2022071100f27280c36e3421d50d9be5e87e12cc0"
+                    "f742c2e9a4957ad9773cc776d7d001"
                 ),
                 bytes.fromhex(
-                    "3044022054e768d8bbd05ed384a0b362a7bcacd7a4e1c51ce0c758da8d54ef7308af1ac402205d645e8c96d63819c2759f6de95f6372d8f5d9168a92ea512a304faa28837a1f01"
+                    "3044022054e768d8bbd05ed384a0b362a7bcacd7a4e1c51ce0c758da"
+                    "8d54ef7308af1ac402205d645e8c96d63819c2759f6de95f6372d8f5"
+                    "d9168a92ea512a304faa28837a1f01"
                 ),
                 bytes.fromhex(
-                    "52210375e00eb72e29da82b89367947f29ef34afb75e8654f6ea368e0acdfd92976b7c2103a1b26313f430c4b15bb1fdce663207659d8cac749a0e53d70eff01874496feff2103c96d495bfdd5ba4145e3e046fee45e84a8a48ad05bd8dbb395c011a32cf9f88053ae"
+                    "52210375e00eb72e29da82b89367947f29ef34afb75e8654f6ea368e"
+                    "0acdfd92976b7c2103a1b26313f430c4b15bb1fdce663207659d8cac"
+                    "749a0e53d70eff01874496feff2103c96d495bfdd5ba4145e3e046fe"
+                    "e45e84a8a48ad05bd8dbb395c011a32cf9f88053ae"
                 ),
             ],
         )

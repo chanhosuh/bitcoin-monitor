@@ -22,7 +22,11 @@ from rest_framework import routers
 from bitcoin_monitor import settings
 from bitcoin_monitor.views import FrontendAppView
 from blocks.views import BlockViewSet
-from transactions.views import TransactionInputViewSet, TransactionOutputViewSet, TransactionViewSet
+from transactions.views import (
+    TransactionInputViewSet,
+    TransactionOutputViewSet,
+    TransactionViewSet,
+)
 
 
 # from django.views.generic.base import RedirectView
@@ -48,4 +52,4 @@ urlpatterns = [
 if settings.DEBUG:
     import debug_toolbar
 
-    urlpatterns = [url(r"^__debug__/", include(debug_toolbar.urls)),] + urlpatterns
+    urlpatterns = [url(r"^__debug__/", include(debug_toolbar.urls))] + urlpatterns
