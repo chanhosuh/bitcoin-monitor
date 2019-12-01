@@ -165,7 +165,7 @@ coverage:
 	docker-compose exec django coverage report
 	docker-compose exec django coverage html
 	@echo "test coverage report complete 📊"
-	@docker cp "$(shell docker ps | grep 'loanstreet-rebuild_django' | cut -d ' ' -f1)":/code/htmlcov /tmp
+	@docker cp "$(shell docker ps | grep 'bitcoin-monitor_django' | cut -d ' ' -f1)":/code/htmlcov /tmp
 	@python -m webbrowser "file:///tmp/htmlcov/index.html"
 
 # https://stackoverflow.com/a/51866793/1175053
@@ -186,16 +186,16 @@ lint:
 
 .PHONY: flake8
 flake8:
-	@echo "$(REVERSE)Running$(RESET) $(BOLD)flake8$(RESET)..."
+	@echo -e "$(REVERSE)Running$(RESET) $(BOLD)flake8$(RESET)..."
 	@if ! flake8 ; then \
-	    echo "$(BOLD)flake8$(RESET): $(RED)FAILED$(RESET) checks" ;\
+	    echo -e "$(BOLD)flake8$(RESET): $(RED)FAILED$(RESET) checks" ;\
 	    exit 1 ;\
 	fi
 	@echo "flake8 passed 🍄"
 
 .PHONY: pylint
 pylint:
-	@echo "$(REVERSE)Running$(RESET) $(BOLD)pylint$(RESET)..."
+	@echo -e "$(REVERSE)Running$(RESET) $(BOLD)pylint$(RESET)..."
 	@echo ""
 	@travis/check_pylint_score.py
 	@echo ""
