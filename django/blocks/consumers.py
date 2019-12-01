@@ -22,12 +22,10 @@ class BlockConsumer(WebsocketConsumer):
 
     def disconnect(self, close_code):
         """ leave group and disconnect """
-        async_to_sync(self.channel_layer.group_discard)(
-            self.message_type, self.channel_name
-        )
+        async_to_sync(self.channel_layer.group_discard)(self.topic, self.channel_name)
         super().disconnect(close_code)
 
     def block_update(self, event):
         """ extract block from event and send to websocket """
         block = event["block"]
-        self.send(text_data=json.dumps({"block": block,}))
+        self.send(text_data=json.dumps({"block": block}))
