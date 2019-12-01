@@ -14,5 +14,9 @@ install:
   - git clone https://github.com/chanhosuh/docker-bitcoin.git
   - cd $TRAVIS_BUILD_DIR
 
+before_script:
+  # Disable services enabled by default
+  - sudo service postgresql stop
+
 script:
   - make test
