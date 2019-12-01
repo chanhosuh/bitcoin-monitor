@@ -104,6 +104,9 @@ class TransactionInput(TimeStampedModel):
 
     script_sig = HexField(max_length=20000)
 
+    # witness stack items
+    witness = ArrayField(HexField(max_length=20000), null=True)
+
     def serialize(self):
         raw_tx = b""
         raw_tx += bytes.fromhex(self.txid)
@@ -137,14 +140,3 @@ class TransactionOutput(TimeStampedModel):
         raw_tx += encode_as_varint(len(script_pubkey_as_bytes))
         raw_tx += script_pubkey_as_bytes
         return raw_tx
-
-
-class Witness(TimeStampedModel):
-
-    transaction_input = models.ForeignKey(
-        "transactions.TransactionInput",
-        related_name="witness",
-        on_delete=models.CASCADE,
-    )
-
-    stack_items = ArrayField(HexField(max_length=20000))
