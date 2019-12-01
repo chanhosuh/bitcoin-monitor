@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/chanhosuh/bitcoin-monitor.svg?branch=master)](https://travis-ci.org/chanhosuh/bitcoin-monitor)
+
 # bitcoin-monitor
 Bitcoin block explorer, using Django to persist blocks from the bitcoin node (`bitcoind`) into Postgres, and displaying through a React frontend.
 
