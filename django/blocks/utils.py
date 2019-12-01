@@ -4,12 +4,7 @@ from django import db
 
 from blocks.models import Block
 from core.serialization import decode_varint, streamify_if_bytes
-from transactions.models import (
-    Transaction,
-    TransactionInput,
-    TransactionOutput,
-    Witness,
-)
+from transactions.models import Transaction, TransactionInput, TransactionOutput
 from transactions.utilities import parse_transaction
 
 
