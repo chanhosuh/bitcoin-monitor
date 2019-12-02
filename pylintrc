@@ -9,12 +9,10 @@ extension-pkg-whitelist=
 # paths.  
   
 ignore=
-	frontend,
-	nginx,
-	postgres,
-    hooks,
     logs,
     htmlcov,
+    static,
+    migrations,
 
 # Add files or directories matching the regex patterns to the blacklist. The
 # regex matches against base names, not paths.
