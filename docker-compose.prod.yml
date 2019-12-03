@@ -2,7 +2,8 @@ version: '3'
 
 services:
     bitcoind:
-        build: ../docker-bitcoin/bitcoind
+        # build: ../docker-bitcoin/bitcoind
+        image: chanhosuh/bitcoin:latest
         volumes:
             - "/mnt/blockchain/bitcoin-data:/data"
         networks:
