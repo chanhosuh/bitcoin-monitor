@@ -6,8 +6,6 @@ RED := \033[0;31m
 
 .DEFAULT_GOAL := help
 
-include ../docker-bitcoin/bitcoind/bitcoin.conf
-
 SHELL := bash
 
 .PHONY: help
@@ -123,11 +121,9 @@ clean:
 
 .PHONY: status
 status:
-	@docker-compose exec bitcoind bash -c "\
+	@docker-compose exec --user root bitcoind bash -c "\
 	    bitcoin-cli \
-	    --rpcuser=$(rpcuser) \
-	    --rpcpassword=$(rpcpassword) \
-	    getblockchaininfo\
+	    getblockchaininfo \
 	"
 
 .PHONY: nuke_blockchain
