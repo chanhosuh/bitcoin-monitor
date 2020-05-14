@@ -46,6 +46,7 @@ help:
 	@echo ""
 	@echo "APPLICATION:"
 	@echo "process_blockchain       Run 'process_blockchain' Django management command"
+	@echo "price_feeds              Run 'price_feeds' Django management command"
 	@echo ""
 
 .PHONY: build
