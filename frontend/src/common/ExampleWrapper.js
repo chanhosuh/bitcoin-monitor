@@ -1,8 +1,13 @@
 import React from "react";
-import { FixedSizeList as List } from "react-window";
-import InfiniteLoader from "react-window-infinite-loader";
-import AutoSizer from "react-virtualized-auto-sizer";
 import "./ExampleWrapper.css";
+import {
+  InfiniteLoader,
+  List,
+  AutoSizer,
+  Table,
+  Column,
+} from "react-virtualized";
+import "react-virtualized/styles.css";
 
 const ExampleWrapper = ({
   // Are there more items to load?
@@ -19,7 +24,7 @@ const ExampleWrapper = ({
   // Callback function responsible for loading the next page of items.
   loadNextPage,
 
-  RowComponent
+  RowComponent,
 }) => {
   // If there are more items to be loaded then add an extra row to hold a loading indicator.
   const itemCount = hasNextPage ? items.length + 1 : items.length;
@@ -29,13 +34,13 @@ const ExampleWrapper = ({
   const loadMoreItems = isNextPageLoading ? () => {} : loadNextPage;
 
   // Every row is loaded except for our loading indicator row.
-  const isItemLoaded = index => !hasNextPage || index < items.length;
+  const isItemLoaded = (index) => !hasNextPage || index < items.length;
 
   // Render an item or a loading indicator.
-  const Item = ({ index, style }) => {
+  const Item = ({ key, index, style }) => {
     if (!isItemLoaded(index)) {
       return (
-        <div style={style}>
+        <div key={key} style={style}>
           <div className="loading">Loading</div>
         </div>
       );
@@ -44,6 +49,7 @@ const ExampleWrapper = ({
       return (
         <div
           className={index % 2 ? "ListItemOdd" : "ListItemEven"}
+          key={key}
           style={style}
         >
           <RowComponent item={item} />
@@ -56,22 +62,40 @@ const ExampleWrapper = ({
     <AutoSizer>
       {({ height, width }) => (
         <InfiniteLoader
-          isItemLoaded={isItemLoaded}
-          itemCount={itemCount}
-          loadMoreItems={loadMoreItems}
+          isRowLoaded={isItemLoaded}
+          rowCount={itemCount}
+          loadMoreRows={loadMoreItems}
         >
-          {({ onItemsRendered, ref }) => (
-            <List
-              className="List"
-              height={height}
-              itemCount={itemCount}
-              itemSize={50}
-              onItemsRendered={onItemsRendered}
-              ref={ref}
+          {({ onRowsRendered, ref }) => (
+            <Table
               width={width}
+              height={height}
+              rowHeight={35}
+              rowCount={itemCount}
+              rowSize={50}
+              onRowsRendered={onRowsRendered}
+              rowRenderer={Item}
+              rowGetter={Item}
+              headerHeight={35}
+              ref={ref}
             >
-              {Item}
-            </List>
+              <Column flexGrow={1} label="Height" dataKey="height" width={5} />
+              <Column width={20} flexGrow={1} label="Time" />
+              <Column width={10} flexGrow={1} label="Amount" />
+              <Column
+                width={10}
+                flexGrow={1}
+                label="No. of Tx"
+                dataKey="num_tx"
+              />
+              <Column
+                width={30}
+                flexGrow={1}
+                label="Created by"
+                dataKey="created_by"
+              />
+              <Column width={80} flexGrow={1} label="Hash" dataKey="hash" />
+            </Table>
           )}
         </InfiniteLoader>
       )}

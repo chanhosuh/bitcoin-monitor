@@ -8,7 +8,7 @@ import Price from "../price/Price";
 import SearchBox from "../common/SearchBox";
 
 // for testing
-// import testBlockData from "./test_data/blocks.json";
+import testBlockData from "../test_data/blocks.json";
 
 const PAGE_LENGTH = 50;
 
@@ -23,14 +23,14 @@ class App extends PureComponent {
     // list paging
     currentPage: 0,
     hasNextPage: false,
-    isNextPageLoading: false
+    isNextPageLoading: false,
   };
 
   componentDidMount() {
     this.fetchInitialBlocks();
     this.connectWebSockets();
     // for testing
-    // this.setBlocks(testBlockData);
+    this.setBlocks(testBlockData);
   }
 
   componentDidUpdate() {
@@ -38,27 +38,27 @@ class App extends PureComponent {
     console.log("Current state: ", this.state);
     this.setState({
       hasNextPage: state.blockList.length < state.latestBlockHeight + 1,
-      currentPage: Math.ceil(state.blockList.length / PAGE_LENGTH)
+      currentPage: Math.ceil(state.blockList.length / PAGE_LENGTH),
     });
   }
 
-  getBlock = blockHash => this.state.blocks[blockHash];
+  getBlock = (blockHash) => this.state.blocks[blockHash];
 
-  setBlocks = newBlocks => {
+  setBlocks = (newBlocks) => {
     const blockList = [...this.state.blockList];
     for (const block of newBlocks) {
       if (!(block.hash in this.state.blocks)) {
         blockList.push(block);
       }
     }
-    const blocks = blockList.reduce(function(map, obj) {
+    const blocks = blockList.reduce(function (map, obj) {
       map[obj.hash] = obj;
       return map;
     }, {});
     this.setState({ blocks, blockList });
   };
 
-  setHeight = blockHeight => {
+  setHeight = (blockHeight) => {
     this.setState({ latestBlockHeight: blockHeight });
   };
 
@@ -67,13 +67,13 @@ class App extends PureComponent {
     console.log(`Connecting websockets at ${hostname} ...`);
 
     this.connections = {
-      block: new WebSocket(`ws://${hostname}/ws/block`)
+      block: new WebSocket(`ws://${hostname}/ws/block`),
     };
 
     for (const message_type in this.connections) {
       const conn = this.connections[message_type];
       // eslint-disable-next-line no-loop-func
-      conn.onmessage = event => {
+      conn.onmessage = (event) => {
         console.debug(event);
         const data = JSON.parse(event.data);
         if (data.block) {
@@ -95,14 +95,14 @@ class App extends PureComponent {
   fetchInitialBlocks = () => {
     console.log("Fetching initial blocks ...");
     fetch("/blocks/")
-      .then(response => {
+      .then((response) => {
         console.debug(response);
         if (!response.ok) {
           throw new Error("HTTP status " + response.status);
         }
         return response.json();
       })
-      .then(data => {
+      .then((data) => {
         console.log("Blocks retrieved:", data);
         if (data.count > 0) {
           const latestBlockHeight = data.count - 1;
@@ -112,27 +112,27 @@ class App extends PureComponent {
           // console.log(jsonData);
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("fetchInitialBlocks: " + err);
       });
   };
 
-  fetchBlocks = pageNumber => {
+  fetchBlocks = (pageNumber) => {
     console.log(`Fetching blocks for page ${pageNumber} ...`);
     fetch(`/blocks/?page=${pageNumber}`)
-      .then(response => {
+      .then((response) => {
         console.debug(response);
         if (!response.ok) {
           throw new Error("HTTP status " + response.status);
         }
         return response.json();
       })
-      .then(data => {
+      .then((data) => {
         console.log("Blocks retrieved:", data);
         this.setBlocks(data.results);
         this.setState({ isNextPageLoading: false });
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("fetchBlocks: " + err);
       });
   };
@@ -147,7 +147,7 @@ class App extends PureComponent {
     }
   };
 
-  displaySearchResults = searchResults => {
+  displaySearchResults = (searchResults) => {
     this.setState({ blockList: searchResults });
   };
 
@@ -190,13 +190,13 @@ class App extends PureComponent {
           </div>
 
           <div className="page">
-            <div className="sidebar"></div>
+            {/* <div className="sidebar"></div> */}
             <div className="content">
               <Switch>
                 <Route
                   exact
                   path="/"
-                  render={props => (
+                  render={(props) => (
                     <ExampleWrapper
                       hasNextPage={hasNextPage}
                       isNextPageLoading={isNextPageLoading}
@@ -208,7 +208,7 @@ class App extends PureComponent {
                 />
                 <Route
                   path="/block/:blockHash"
-                  render={props => (
+                  render={(props) => (
                     <Block {...props} getBlock={this.getBlock} />
                   )}
                 />
