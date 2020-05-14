@@ -2,6 +2,14 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "./Block.css";
 
+const RowItem = (props) => {
+  return (
+    <div className="rowelem">
+      <div>{props.children}</div>
+    </div>
+  );
+};
+
 const BlockRow = ({ item }) => {
   /*
     age: "10 years, 9 months ago"
@@ -19,17 +27,17 @@ const BlockRow = ({ item }) => {
   const datetime = new Date(timestamp * 1000).toLocaleString();
   return (
     <div className="row">
-      <span className="rowelem">{height}</span>
-      <span className="rowelem">
+      <RowItem>{height}</RowItem>
+      <RowItem>
         <div>{age}</div>
         <div>{datetime}</div>
-      </span>
-      <span className="rowelem">amount transacted</span>
-      <span className="rowelem">{num_transactions}</span>
-      <span className="rowelem">created by</span>
-      <span className="rowelem">
+      </RowItem>
+      <RowItem>amount transacted</RowItem>
+      <RowItem>{num_transactions}</RowItem>
+      <RowItem>created by</RowItem>
+      <RowItem>
         <Link to={`/block/${hash}`}>{hash}</Link>
-      </span>
+      </RowItem>
     </div>
   );
 };
