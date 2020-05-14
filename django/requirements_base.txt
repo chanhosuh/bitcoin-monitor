@@ -10,9 +10,9 @@ factory-boy==2.11.1
 
 gunicorn==19.9.0
 
-psycopg2-binary==2.7.5
+psycopg2-binary==2.8.5
 
-pandas==0.23.3
+pandas==1.0.3
 pytz==2018.5
 
 black==19.10b0
