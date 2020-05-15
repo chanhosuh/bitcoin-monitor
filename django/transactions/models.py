@@ -42,12 +42,11 @@ import logging
 
 from django.contrib.postgres.fields.array import ArrayField
 from django.db import models
-from django.db.models.fields import BigIntegerField
 
 from model_utils.models import TimeStampedModel
 
 from core.hash_utils import hash256
-from core.model_fields import HexField
+from core.model_fields import BitcoinField, HexField
 from core.serialization import encode_as_varint
 
 
@@ -123,7 +122,7 @@ class TransactionOutput(TimeStampedModel):
         "transactions.Transaction", related_name="vout", on_delete=models.CASCADE,
     )
 
-    value = BigIntegerField()
+    value = BitcoinField()
     n = models.BigIntegerField()
 
     script_pubkey = HexField(max_length=20000)

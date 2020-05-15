@@ -48,9 +48,8 @@ class BitcoinField(ModifiedDecimalBaseField):
     DECIMAL_PLACES = Bitcoin.DECIMAL_PLACES
     MAX_DIGITS = 16
 
-    def from_db_value(
-        self, value, expression, connection, context
-    ):  # pylint: disable=unused-argument
+    # pylint: disable=unused-argument
+    def from_db_value(self, value, expression, connection):
         return self.to_python(value)
 
     def to_python(self, value):
