@@ -5,22 +5,36 @@ from django.utils.translation import ugettext_lazy as _
 from .bitcoin import Bitcoin
 
 
+HEX_CHARS = "0123456789abcdefABCDEF"
+
+
+def validate_hex(hex_string):
+    if not (len(hex_string) % 2 == 0):
+        raise ValidationError(
+            "Hex should have even number of characters: %s" % hex_string
+        )
+    if any(c not in HEX_CHARS for c in hex_string):
+        raise ValidationError("Invalid char in hex string: %s" % hex_string)
+
+
 class HexField(models.CharField):
-    pass
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.validators.append(validate_hex)
 
 
 class ModifiedDecimalBaseField(models.DecimalField):
     """Base class for modified versions of DecimalField."""
 
     def __init__(self, *args, **kwargs):
-        kwargs['decimal_places'] = self.DECIMAL_PLACES  # pylint: disable=no-member
-        kwargs['max_digits'] = self.MAX_DIGITS  # pylint: disable=no-member
+        kwargs["decimal_places"] = self.DECIMAL_PLACES  # pylint: disable=no-member
+        kwargs["max_digits"] = self.MAX_DIGITS  # pylint: disable=no-member
         super().__init__(*args, **kwargs)
 
     def deconstruct(self):
         name, path, args, kwargs = super().deconstruct()
-        del kwargs['decimal_places']
-        del kwargs['max_digits']
+        del kwargs["decimal_places"]
+        del kwargs["max_digits"]
         return name, path, args, kwargs
 
 
@@ -28,12 +42,15 @@ class BitcoinField(ModifiedDecimalBaseField):
     """
     Standardized Decimal representation of bitcoin amount.
     """
-    description = _('Bitcoin as a standardized Decimal number.')
+
+    description = _("Bitcoin as a standardized Decimal number.")
 
     DECIMAL_PLACES = Bitcoin.DECIMAL_PLACES
     MAX_DIGITS = 16
 
-    def from_db_value(self, value, expression, connection, context):  # pylint: disable=unused-argument
+    def from_db_value(
+        self, value, expression, connection, context
+    ):  # pylint: disable=unused-argument
         return self.to_python(value)
 
     def to_python(self, value):
@@ -42,7 +59,9 @@ class BitcoinField(ModifiedDecimalBaseField):
         try:
             return Bitcoin(value)
         except (TypeError, ValueError):
-            raise ValidationError('value {} must be a Decimal or a string representing one.'.format(value))
+            raise ValidationError(
+                "value {} must be a Decimal or a string representing one.".format(value)
+            )
 
     def get_prep_value(self, value):
         """
@@ -70,4 +89,6 @@ class BitcoinField(ModifiedDecimalBaseField):
         and we need to downcast.
         """
         value = self.get_prep_value(value)
-        return connection.ops.adapt_decimalfield_value(value, self.max_digits, self.decimal_places)
+        return connection.ops.adapt_decimalfield_value(
+            value, self.max_digits, self.decimal_places
+        )
