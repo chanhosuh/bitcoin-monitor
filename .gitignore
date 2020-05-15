@@ -8,6 +8,7 @@ db.sqlite3
 .vscode
 
 # Eclipse
+.settings
 .project
 .pydevproject
 
