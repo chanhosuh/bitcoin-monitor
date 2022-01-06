@@ -6,7 +6,7 @@ django-polymorphic==2.1.2
 djangorestframework==3.11.0
 django-celery-beat==2.0.0
 django-redis==4.11.0
-celery==4.4.2
+celery==5.2.2
 factory-boy==2.12.0
 
 channels-redis==2.4.2
