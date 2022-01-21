@@ -24,7 +24,7 @@ pylint-django==2.0.15
 coverage==5.1
 redgreenunittest==0.1.1
 ipdb==0.13.2
-ipython==7.14.0
+ipython==7.16.3
 pydevd==1.9.0
 requests==2.23.0
 cryptocompy==0.1.1.dev1
